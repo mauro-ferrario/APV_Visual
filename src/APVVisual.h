@@ -28,6 +28,36 @@ private:
   ofVec2f   size;
   void      allocateFBO(int width, int height);
   void      initParticleSystem();
+  ofColor   backgroundColor;
+  void      drawBackground();
+  
+  
+  bool globalAlphaCoefficent;
+  bool bDrawPoint;
+  bool bDrawLinePointToPoint;
+  bool bDrawTriangle;
+  bool bConnectPointToPrev;
+  
+  
+  float minDistancePointToPoint;
+  float maxDistancePointToPoint;
+  float distancePointToPoint;
+  
+  float minTriangleCoefficent;
+  float maxTriangleCoefficent;
+  float triangleCoefficent;
+  
+  bool    bSameColorTriangle;
+  bool bTimeAlphaTriangle;
+  
+  
+  vector<float>           left;
+  vector<float>           right;
+  float                   smoothedVol;
+  float                   scaledVol;
+  int                     bufferCounter;
+  
+  int totPoints;
 };
 
 #endif /* defined(__APV_Visual__APVVisual__) */

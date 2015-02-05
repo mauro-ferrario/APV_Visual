@@ -17,9 +17,11 @@ public:
   APVParticleSystem();
   void  setup();
   GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life);
+  void updateAndDraw();
 private:
   float sameSpring;
   float sameFriction;
+  float repulsionForce;
 };
 
 #endif /* defined(__APV_Visual__APVParticleSystem__) */
