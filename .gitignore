@@ -104,3 +104,5 @@ Desktop.ini
 #########################
 
 .mailmap
+
+*.pbxproj

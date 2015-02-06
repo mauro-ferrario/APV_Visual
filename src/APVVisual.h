@@ -23,6 +23,13 @@ public:
   APVParticleSystem particleSystem;
   GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life);
   
+  
+  bool globalAlphaCoefficent;
+  bool bDrawPoint;
+  bool bDrawLinePointToPoint;
+  bool bDrawTriangle;
+  bool bConnectPointToPrev;
+  
 private:
   ofFbo     mainFbo;
   ofVec2f   size;
@@ -32,11 +39,6 @@ private:
   void      drawBackground();
   
   
-  bool globalAlphaCoefficent;
-  bool bDrawPoint;
-  bool bDrawLinePointToPoint;
-  bool bDrawTriangle;
-  bool bConnectPointToPrev;
   
   
   float minDistancePointToPoint;

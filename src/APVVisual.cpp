@@ -8,11 +8,15 @@
 
 #include "APVVisual.h"
 
+vector<ofPoint> points;
 
 APVVisual::APVVisual()
 {
   
 }
+
+
+ofVboMesh mesh;
 
 void APVVisual::setup()
 {
@@ -24,9 +28,9 @@ void APVVisual::setup()
   ofEnableAlphaBlending();
   globalAlphaCoefficent   = 0;
   bDrawPoint              = true;
-  bDrawLinePointToPoint   = true;
-  bDrawTriangle           = true;
-  bConnectPointToPrev     = true;
+  bDrawLinePointToPoint   = false;
+  bDrawTriangle           = false;
+  bConnectPointToPrev     = false;
   minDistancePointToPoint = 0;
   maxDistancePointToPoint = 1000;
   distancePointToPoint    = 100;
@@ -49,8 +53,9 @@ void APVVisual::initParticleSystem()
 {
   particleSystem.init();
   particleSystem.setup();
-  //particleSystem.initGoofyNoise();
-  //particleSystem.moveNoise = true;
+  particleSystem.initGoofyNoise();
+  particleSystem.moveNoise = true;
+  particleSystem.goofyPerlinNoiseForce = .5;
 }
 
 void APVVisual::allocateFBO(int width, int height)
@@ -66,7 +71,7 @@ void APVVisual::update()
   mainFbo.begin();
   ofDisableAlphaBlending();
   ofClear(0,255);
-  particleSystem.updateAndDraw();
+  particleSystem.updateAndDrawWithVisual(this);
   mainFbo.end();
 }
 
@@ -89,4 +94,9 @@ void APVVisual::draw()
 GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
 {
   particleSystem.addParticle(newPosition, maxVelocity, life);
+}
+
+void APVVisual::windowResized(int newWidth, int newHeight)
+{
+  allocateFBO(newWidth, newHeight);
 }

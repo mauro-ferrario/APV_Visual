@@ -120,6 +120,9 @@
 		34AB14101A83F32B00B8B7CE /* APVVisual.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APVVisual.h; sourceTree = "<group>"; };
 		34AB14121A83F51C00B8B7CE /* APVParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = APVParticleSystem.cpp; sourceTree = "<group>"; };
 		34AB14131A83F51C00B8B7CE /* APVParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APVParticleSystem.h; sourceTree = "<group>"; };
+		34AB141C1A843C9200B8B7CE /* effect1.geom */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = effect1.geom; path = bin/data/effect1.geom; sourceTree = SOURCE_ROOT; };
+		34AB141D1A843C9300B8B7CE /* effect1.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = effect1.vert; path = bin/data/effect1.vert; sourceTree = SOURCE_ROOT; };
+		34AB141E1A843C9300B8B7CE /* effect1.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = effect1.frag; path = bin/data/effect1.frag; sourceTree = SOURCE_ROOT; };
 		3B361208CD4107E479F04E7B /* NetworkingUtils.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = NetworkingUtils.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/posix/NetworkingUtils.cpp; sourceTree = SOURCE_ROOT; };
 		444657A12E59D0ED86981498 /* TimerListener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = TimerListener.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/TimerListener.h; sourceTree = SOURCE_ROOT; };
 		48974F980F51769171D0B2F5 /* IpEndpointName.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = IpEndpointName.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/IpEndpointName.h; sourceTree = SOURCE_ROOT; };
@@ -258,6 +261,16 @@
 				34AB14091A83F13D00B8B7CE /* GoofyFlowField.h */,
 			);
 			name = GoofyGooberProject;
+			sourceTree = "<group>";
+		};
+		34AB141B1A843C7D00B8B7CE /* shader */ = {
+			isa = PBXGroup;
+			children = (
+				34AB141C1A843C9200B8B7CE /* effect1.geom */,
+				34AB141D1A843C9300B8B7CE /* effect1.vert */,
+				34AB141E1A843C9300B8B7CE /* effect1.frag */,
+			);
+			name = shader;
 			sourceTree = "<group>";
 		};
 		38871A5825686AE018EC2BF0 /* libs */ = {
@@ -446,6 +459,7 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				34AB141B1A843C7D00B8B7CE /* shader */,
 				34AB13FF1A83F10600B8B7CE /* GoofyGooberProject */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,

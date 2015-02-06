@@ -7,7 +7,7 @@
 //
 
 #include "APVParticleSystem.h"
-
+#include "APVVisual.h"
 
 APVParticleSystem::APVParticleSystem()
 {
@@ -30,13 +30,11 @@ GoofyParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVelo
   return particle;
 }
 
-void APVParticleSystem::updateAndDraw()
+void APVParticleSystem::updateAndDrawWithVisual(APVVisual* visual)
 {
   if(moveNoise)
     goofyPerlinNoise.update();
   vector<GoofyParticle*>::iterator vItr = particles.begin();
-  vector<GoofyParticle*>::iterator prevParticle = particles.begin();
-  vector<GoofyParticle*>::iterator pPointerIn;
   int cont = 0;
   while ( vItr != particles.end() )
   {
@@ -51,15 +49,6 @@ void APVParticleSystem::updateAndDraw()
     (*vItr)->update();
     lastActionInsideUpdateLoop((*vItr));
     
-    
-    
-
-    
-//    if(cont > 2)
-//    {
-//      prevPrevParticle = prevParticle - 1;
-//    }
-    
     if (!(*vItr)->active)
     {
       delete * vItr;
@@ -70,36 +59,100 @@ void APVParticleSystem::updateAndDraw()
       if((*vItr)->active)
       {
         GoofyParticle* prevPrevParticle;
-        
-        if(cont > 1)
+        if(cont > 0 && visual->bConnectPointToPrev)
+            connectPrevPoint(vItr);
+        if(visual->bDrawLinePointToPoint || visual->bDrawTriangle)
+        loopIn(vItr, visual, cont);
+        if(visual->bDrawPoint)
         {
-          prevParticle = vItr - 1;
-          
-          if((*prevParticle)->active)
-          {
-            ofLine((*vItr)->position, (*prevParticle)->position);
-          }
+          ofSetColor(255);
+          ofCircle((*vItr)->position, 1);
         }
-        
-        ofPushStyle();
-        
-        ofEnableAlphaBlending();
-        ofSetColor(255,10);
-        pPointerIn = vItr;
-        while ( pPointerIn != particles.end() )
-        {
-          float distance = (*vItr)->position.distance((*pPointerIn)->position);
-          if(distance < 100)
-            ofLine((*vItr)->position, (*pPointerIn)->position);
-          pPointerIn++;
-        }
-        ofPopStyle();
-        
-        ofCircle((*vItr)->position, 1);
-        
         cont++;
       }
       vItr++;
     }
   }
+  visual = NULL;
 }
+
+void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, APVVisual* visual, int cont)
+{
+  vector<GoofyParticle*>::iterator pPointerIn = vItr;
+  ofPushStyle();
+  ofEnableAlphaBlending();
+  while ( pPointerIn != particles.end() )
+  {
+    if(cont > 2 && visual->bDrawTriangle)
+      drawTriangle(vItr, pPointerIn -1, pPointerIn);
+    if(visual->bDrawLinePointToPoint)
+      drawConnectPoints(vItr, pPointerIn);
+    pPointerIn++;
+  }
+  ofDisableAlphaBlending();
+  ofPopStyle();
+  visual = NULL;
+}
+
+void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint)
+{
+  float triangleCoefficent = .954;
+  float alpha = 25;
+  bool bSameColorTriangle = true;
+  float perimeter = getTrianglePerimeter(firstPoint, secondPoint, thirdPoint);
+  
+  ofPushStyle();
+  
+  if(bSameColorTriangle)
+  {
+    ofSetColor(255,0,0,alpha);
+  }
+  else
+  {
+    if(perimeter < 700 / triangleCoefficent)
+      ofSetColor(255, 0, 0, alpha);
+    else if(perimeter >= 700 / triangleCoefficent && perimeter < 900 / triangleCoefficent)
+      ofSetColor(0, 255, 0, alpha);
+    else if(perimeter >= 900 / triangleCoefficent && perimeter <= 1300 / triangleCoefficent)
+      ofSetColor(0, 0, 255, alpha);
+  }
+  if(perimeter < 1000 * triangleCoefficent && perimeter > 700)
+  {
+    ofFill();
+    ofTriangle((*firstPoint)->position.x, (*firstPoint)->position.y, (*secondPoint)->position.x, (*secondPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y);
+  }
+  ofPopStyle();
+}
+
+
+float APVParticleSystem::getTrianglePerimeter(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint)
+{
+  return abs(ofDist((*firstPoint)->position.x, (*firstPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y)) + abs(ofDist((*firstPoint)->position.x, (*firstPoint)->position.y, (*secondPoint)->position.x, (*secondPoint)->position.y)) + abs(ofDist((*secondPoint)->position.x, (*secondPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y));
+}
+
+
+
+void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
+{
+  vector<GoofyParticle*>::iterator prevParticle = vItr - 1;
+  ofPushStyle();
+  ofSetColor(255,255);
+  if((*prevParticle)->active)
+  {
+    ofLine((*vItr)->position, (*prevParticle)->position);
+  }
+  ofPopStyle();
+}
+
+void APVParticleSystem::drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn)
+{
+  float distance = (*vItr)->position.distance((*pPointerIn)->position);
+  if(distance > 100 && distance < 500)
+  {
+    ofPushStyle();
+    ofSetColor(255,10);
+    ofLine((*vItr)->position, (*pPointerIn)->position);
+    ofPopStyle();
+  }
+}
+

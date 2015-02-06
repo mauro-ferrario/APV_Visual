@@ -30,6 +30,14 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
   if(key == 'f')
     ofToggleFullscreen();
+  if(key == 'q')
+    visual.bDrawPoint = !visual.bDrawPoint;
+  if(key == 'w')
+    visual.bConnectPointToPrev = !visual.bConnectPointToPrev;
+  if(key == 'e')
+    visual.bDrawLinePointToPoint = !visual.bDrawLinePointToPoint;
+  if(key == 'r')
+    visual.bDrawTriangle = !visual.bDrawTriangle;
 }
 
 //--------------------------------------------------------------
@@ -54,7 +62,7 @@ void ofApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+  visual.windowResized(w, h);
 }
 
 //--------------------------------------------------------------
