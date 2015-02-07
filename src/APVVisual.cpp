@@ -8,21 +8,15 @@
 
 #include "APVVisual.h"
 
-vector<ofPoint> points;
-
 APVVisual::APVVisual()
 {
   
 }
 
-
-ofVboMesh mesh;
-
 void APVVisual::setup()
 {
   size = ofVec2f(ofGetWindowWidth(), ofGetWindowHeight());
   allocateFBO(size.x, size.y);
-  initParticleSystem();
   backgroundColor = ofColor(0);
   ofSetCircleResolution(60);
   ofEnableAlphaBlending();
@@ -39,6 +33,7 @@ void APVVisual::setup()
   triangleCoefficent      = .5;
   bSameColorTriangle      = true;
   bTimeAlphaTriangle      = true;
+  bFrameHandler           = true;
   
   left.assign(256, 0.0);
   right.assign(256, 0.0);
@@ -47,15 +42,69 @@ void APVVisual::setup()
   scaledVol		= 0.0;
   bufferCounter	= 0;
   totPoints = 0;
+  maxVolumeValue = 0;
+  initParticleSystem();
+}
+
+void APVVisual::audioIn(float * input, int bufferSize, int nChannels)
+{
+  float curVol = 0.0;
+  
+  // samples are "interleaved"
+  int numCounted = 0;
+  
+  //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
+  for (int i = 0; i < bufferSize; i++){
+    left[i]		= input[ i * 2 ] * 0.5;
+    right[i]	= input[ i * 2 +1 ] * 0.5;
+    
+    curVol += left[i] * left[i];
+    curVol += right[i] * right[i];
+    numCounted+=2;
+    
+  }
+  
+  //this is how we get the mean of rms :)
+  curVol /= (float)numCounted;
+  
+  // this is how we get the root of rms :)
+  curVol = sqrt( curVol );
+  
+  smoothedVol *= 0.93;
+  smoothedVol += 0.07 * curVol;
+  
+  volume = smoothedVol;
+  
+  
+  if(volume > maxVolumeValue)
+  {
+    maxVolumeValue = volume;
+  }
+  else
+  {
+    maxVolumeValue -= .001;
+  }
+  
+  if(volume < .05)
+    globalAlphaCoefficent = ofMap(volume, 0, .4, 0, 1);
+  else
+    globalAlphaCoefficent = 1;
+  
+  //   globalAlphaCoefficent = 1;
+  
+  bufferCounter++;
+  
+ //cout << volume << endl;
 }
 
 void APVVisual::initParticleSystem()
 {
   particleSystem.init();
-  particleSystem.setup();
+  particleSystem.setup(this);
   particleSystem.initGoofyNoise();
-  particleSystem.moveNoise = true;
-  particleSystem.goofyPerlinNoiseForce = .5;
+//  particleSystem.moveNoise = true;
+//  particleSystem.goofyPerlinNoiseForce = .02;
+//  particleSystem.goofyPerlinNoiseForce = .15;
 }
 
 void APVVisual::allocateFBO(int width, int height)
@@ -68,10 +117,18 @@ void APVVisual::allocateFBO(int width, int height)
 
 void APVVisual::update()
 {
+  if(ofGetFrameRate() < 50)
+  {
+    triangleCoefficent -= .005;
+  }
+  else
+  {
+    triangleCoefficent += .005;
+  }
   mainFbo.begin();
   ofDisableAlphaBlending();
   ofClear(0,255);
-  particleSystem.updateAndDrawWithVisual(this);
+  particleSystem.updateAndDrawWithVisual();
   mainFbo.end();
 }
 

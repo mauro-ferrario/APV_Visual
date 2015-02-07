@@ -22,13 +22,17 @@ public:
   void      windowResized(int newWidth, int newHeight);
   APVParticleSystem particleSystem;
   GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life);
+  void audioIn(float * input, int bufferSize, int nChannels);
   
-  
-  bool globalAlphaCoefficent;
+  float globalAlphaCoefficent;
   bool bDrawPoint;
   bool bDrawLinePointToPoint;
   bool bDrawTriangle;
   bool bConnectPointToPrev;
+  bool  bFrameHandler;
+  vector<float>           left;
+  vector<float>           right;
+  float triangleCoefficent;
   
 private:
   ofFbo     mainFbo;
@@ -47,17 +51,16 @@ private:
   
   float minTriangleCoefficent;
   float maxTriangleCoefficent;
-  float triangleCoefficent;
   
   bool    bSameColorTriangle;
   bool bTimeAlphaTriangle;
   
   
-  vector<float>           left;
-  vector<float>           right;
   float                   smoothedVol;
   float                   scaledVol;
   int                     bufferCounter;
+  float                   volume;
+  float                   maxVolumeValue;
   
   int totPoints;
 };

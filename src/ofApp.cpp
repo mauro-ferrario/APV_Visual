@@ -6,6 +6,8 @@ void ofApp::setup(){
   ofBackground(0);
   ofSetVerticalSync(true);
   visual.setup();
+  int bufferSize = 256;
+  soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 }
 
 //--------------------------------------------------------------
@@ -38,6 +40,11 @@ void ofApp::keyReleased(int key){
     visual.bDrawLinePointToPoint = !visual.bDrawLinePointToPoint;
   if(key == 'r')
     visual.bDrawTriangle = !visual.bDrawTriangle;
+}
+
+void ofApp::audioIn(float * input, int bufferSize, int nChannels)
+{
+  visual.audioIn(input, bufferSize, nChannels);
 }
 
 //--------------------------------------------------------------
