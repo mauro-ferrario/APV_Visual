@@ -14,28 +14,36 @@ APVParticleSystem::APVParticleSystem()
   
 }
 
-void APVParticleSystem::setup()
+void APVParticleSystem::setup(APVVisual* _visual)
 {
-  sameFriction = .1;
-  sameSpring = .1;
+  this->visual = _visual;
+  _visual = NULL;
+  sameFriction = .83;
+  sameSpring = .183;
   repulsionForce = 1;
 }
 
-GoofyParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
+APVParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
 {
-  GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity * percParticleSpeed, sameSpring, sameFriction);
+  APVParticle* particle = new APVParticle(newPosition, maxVelocity * percParticleSpeed, ofColor(255), sameSpring, sameFriction);
   particle->target = newPosition;
   particles.push_back(particle);
   particle = NULL;
   return particle;
 }
 
-void APVParticleSystem::updateAndDrawWithVisual(APVVisual* visual)
+void APVParticleSystem::updateAndDrawWithVisual()
 {
+  ofEnableAlphaBlending();
   if(moveNoise)
     goofyPerlinNoise.update();
   vector<GoofyParticle*>::iterator vItr = particles.begin();
   int cont = 0;
+  int totParticles = particles.size();
+  int halfTotParticles = totParticles*.5;
+  int totMax = 0;
+  ofVec2f center = ofVec2f(ofGetWindowWidth()*.5, ofGetWindowHeight()*.5);
+  
   while ( vItr != particles.end() )
   {
     if(bFollowTarget)
@@ -56,31 +64,91 @@ void APVParticleSystem::updateAndDrawWithVisual(APVVisual* visual)
     }
     else
     {
+      APVParticle* tempParticle = (APVParticle*)(*vItr);
       if((*vItr)->active)
       {
+        if(cont < halfTotParticles)
+        {
+          if(visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256)] > 0)
+          {
+            if(cont < 10)
+              totMax += visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256)];
+            tempParticle->audioCoefficent = visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256)] * 200;
+            float radius = ofGetWindowWidth()*.5;
+            float force = tempParticle->audioCoefficent * 1;
+            float limitSpeed = 10;
+            GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
+            
+            (*vItr)->applyRepulsion(repeller);
+            delete repeller;
+            repeller = NULL;
+            
+            
+          //  if(!emitterMode)
+           //  tempParticle->applyRepulsion(repulsionForce * points[a]->audioCoeff , repulsionFromTarget);
+          }
+        }
+        else
+        {
+          if(visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256)] > 0)
+          {
+            tempParticle->audioCoefficent = visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256)] * 100;
+            float radius = ofGetWindowWidth()*.5;
+            float force = tempParticle->audioCoefficent * 1;
+            float limitSpeed = 10;
+            GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
+            
+            (*vItr)->applyRepulsion(repeller);
+            delete repeller;
+            repeller = NULL;
+
+            //   if(!emitterMode)
+          //    points[a]->applyRepulsion(repulsionForce * points[a]->audioCoeff, repulsionFromTarget);
+          }
+        }
+        tempParticle = NULL;
+        /*
+        
+        if(points[a]->target.x == NULL)
+        {
+          if(points[a]->position.x > ofGetWindowWidth() + LIMIT_OUTISDE || points[a]->position.x < - LIMIT_OUTISDE || points[a]->position.y < -LIMIT_OUTISDE || points[a]->position.y > ofGetWindowHeight() + LIMIT_OUTISDE)
+          {
+            Particle* pPoint = points[a];
+            //   points.begin() + a) = 0; // Devo mettere a 0 l'indirizzo a cui punta
+            points.erase(points.begin() + a);
+            delete pPoint;  // Cancello l'oggetto
+            //pPoint = NULL;
+          }
+        }
+        */
+        
         GoofyParticle* prevPrevParticle;
         if(cont > 0 && visual->bConnectPointToPrev)
             connectPrevPoint(vItr);
         if(visual->bDrawLinePointToPoint || visual->bDrawTriangle)
-        loopIn(vItr, visual, cont);
+        loopIn(vItr, cont);
         if(visual->bDrawPoint)
         {
-          ofSetColor(255);
+          ofPushStyle();
+          APVParticle* tempParticle = (APVParticle*)(*vItr);
+          float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+          tempParticle = NULL;
+          ofSetColor(255, alpha);
           ofCircle((*vItr)->position, 1);
+          ofPopStyle();
         }
         cont++;
       }
       vItr++;
     }
   }
-  visual = NULL;
+  ofDisableAlphaBlending();
 }
 
-void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, APVVisual* visual, int cont)
+void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, int cont)
 {
   vector<GoofyParticle*>::iterator pPointerIn = vItr;
   ofPushStyle();
-  ofEnableAlphaBlending();
   while ( pPointerIn != particles.end() )
   {
     if(cont > 2 && visual->bDrawTriangle)
@@ -89,18 +157,18 @@ void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, APVVisual*
       drawConnectPoints(vItr, pPointerIn);
     pPointerIn++;
   }
-  ofDisableAlphaBlending();
   ofPopStyle();
-  visual = NULL;
 }
 
 void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint)
 {
-  float triangleCoefficent = .954;
   float alpha = 25;
   bool bSameColorTriangle = true;
   float perimeter = getTrianglePerimeter(firstPoint, secondPoint, thirdPoint);
   
+  APVParticle* tempParticle = (APVParticle*)(*firstPoint);
+  alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent;
+  tempParticle = NULL;
   ofPushStyle();
   
   if(bSameColorTriangle)
@@ -109,14 +177,14 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
   }
   else
   {
-    if(perimeter < 700 / triangleCoefficent)
+    if(perimeter < 700 / visual->triangleCoefficent)
       ofSetColor(255, 0, 0, alpha);
-    else if(perimeter >= 700 / triangleCoefficent && perimeter < 900 / triangleCoefficent)
+    else if(perimeter >= 700 / visual->triangleCoefficent && perimeter < 900 / visual->triangleCoefficent)
       ofSetColor(0, 255, 0, alpha);
-    else if(perimeter >= 900 / triangleCoefficent && perimeter <= 1300 / triangleCoefficent)
+    else if(perimeter >= 900 / visual->triangleCoefficent && perimeter <= 1300 / visual->triangleCoefficent)
       ofSetColor(0, 0, 255, alpha);
   }
-  if(perimeter < 1000 * triangleCoefficent && perimeter > 700)
+  if(perimeter > 100 * visual->triangleCoefficent && perimeter < 150 * visual->triangleCoefficent)
   {
     ofFill();
     ofTriangle((*firstPoint)->position.x, (*firstPoint)->position.y, (*secondPoint)->position.x, (*secondPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y);
@@ -134,9 +202,13 @@ float APVParticleSystem::getTrianglePerimeter(vector<GoofyParticle*>::iterator f
 
 void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
 {
+  APVParticle* tempParticle = (APVParticle*)(*vItr);
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+  tempParticle = NULL;
+  ofPushStyle();
   vector<GoofyParticle*>::iterator prevParticle = vItr - 1;
   ofPushStyle();
-  ofSetColor(255,255);
+  ofSetColor(255, alpha);
   if((*prevParticle)->active)
   {
     ofLine((*vItr)->position, (*prevParticle)->position);
@@ -146,11 +218,14 @@ void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
 
 void APVParticleSystem::drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn)
 {
+  APVParticle* tempParticle = (APVParticle*)(*vItr);
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent;
+  tempParticle = NULL;
   float distance = (*vItr)->position.distance((*pPointerIn)->position);
   if(distance > 100 && distance < 500)
   {
     ofPushStyle();
-    ofSetColor(255,10);
+    ofSetColor(255, alpha);
     ofLine((*vItr)->position, (*pPointerIn)->position);
     ofPopStyle();
   }
