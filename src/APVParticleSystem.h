@@ -22,11 +22,13 @@ public:
   void  setup(APVVisual* visual);
   APVParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life);
   void updateAndDrawWithVisual();
+  void removePoints(bool removeNow);
   APVVisual* visual;
-private:
   float sameSpring;
   float sameFriction;
   float repulsionForce;
+  float sameLimitVelocity;
+private:
   
   void drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn);
   void connectPrevPoint(vector<GoofyParticle*>::iterator vItr);

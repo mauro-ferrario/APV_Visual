@@ -27,9 +27,10 @@ void APVVisual::setup()
   bConnectPointToPrev     = false;
   minDistancePointToPoint = 0;
   maxDistancePointToPoint = 1000;
-  distancePointToPoint    = 100;
-  minTriangleCoefficent   = .000001;
-  maxTriangleCoefficent   = 3;
+  distancePointToPointCoefficent = 1000;
+  minTrianglePerimeter    = 10;
+  maxTrianglePerimeter    = 1000;
+  trianglePerimeterCoefficent = 1000;
   triangleCoefficent      = .5;
   bSameColorTriangle      = true;
   bTimeAlphaTriangle      = true;
@@ -43,7 +44,70 @@ void APVVisual::setup()
   bufferCounter	= 0;
   totPoints = 0;
   maxVolumeValue = 0;
+  maxRepulsionForce = 100;
   initParticleSystem();
+  initOSC();
+  
+  
+  mapToBoolValue["/Effect/Draw_point"] = &bDrawPoint;
+  mapToBoolValue["/Effect/Draw_triangle"] = &bDrawTriangle;
+  mapToBoolValue["/Effect/Connect_to_prev_point"] = &bConnectPointToPrev;
+  mapToBoolValue["/Effect/Connect_points"] = &bDrawLinePointToPoint;
+  mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"] = &bSameColorTriangle;
+  
+  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = &minDistancePointToPoint;
+  mapToFloatValue["/Effect/Connect_Lines/Max_Line_Distance"] = &maxDistancePointToPoint;
+  
+  mapToFloatValue["/Effect/Triangles/Min_Perimeter"] = &minTrianglePerimeter;
+  mapToFloatValue["/Effect/Triangles/Max_Perimeter"] = &maxTrianglePerimeter;
+  
+  mapToFloatValue["/Movement/Same_Spring"] = &particleSystem.sameSpring;
+  mapToFloatValue["/Movement/Same_Friction"] =  &particleSystem.sameFriction;;
+  mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem.repulsionForce;;
+  mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem.sameLimitVelocity;;
+}
+
+void APVVisual::initOSC()
+{
+  receiver.setup(6666);
+}
+
+void APVVisual::receiveMessagges()
+{
+  while( receiver.hasWaitingMessages() )
+  {
+    ofxOscMessage m;
+    receiver.getNextMessage( &m );
+    string messageAddress = m.getAddress();
+    cout << messageAddress << endl;
+    if ( messageAddress == "/addSinglePoint" )
+    {
+      ofVec3f position = ofVec3f(m.getArgAsFloat( 0 ) * ofGetWindowWidth(), m.getArgAsFloat( 1 ) * ofGetWindowHeight());
+      addParticle(position, particleSystem.sameLimitVelocity);
+    }
+    else if ( messageAddress == "/clear" )
+    {
+      particleSystem.removePoints(false);
+    }
+    else if ( messageAddress == "/Effect/Triangles/Color" )
+    {
+      string color = m.getArgAsString(0);
+      vector<string> colorChannels = ofSplitString(color, ",");
+      cout << color << endl;
+      triangleColor.r = ofToFloat(colorChannels[0])*255;
+      triangleColor.g = ofToFloat(colorChannels[1])*255;
+      triangleColor.b = ofToFloat(colorChannels[2])*255;
+      
+    }
+    if(mapToBoolValue[messageAddress])
+    {
+      *mapToBoolValue[messageAddress] = bool(m.getArgAsInt32(0));
+    }
+    if(mapToFloatValue[messageAddress])
+    {
+      *mapToFloatValue[messageAddress] = m.getArgAsFloat(0);
+    }
+  }
 }
 
 void APVVisual::audioIn(float * input, int bufferSize, int nChannels)
@@ -101,7 +165,7 @@ void APVVisual::initParticleSystem()
 {
   particleSystem.init();
   particleSystem.setup(this);
-  particleSystem.initGoofyNoise();
+//  particleSystem.initGoofyNoise();
 //  particleSystem.moveNoise = true;
 //  particleSystem.goofyPerlinNoiseForce = .02;
 //  particleSystem.goofyPerlinNoiseForce = .15;
@@ -117,6 +181,7 @@ void APVVisual::allocateFBO(int width, int height)
 
 void APVVisual::update()
 {
+  receiveMessagges();
   if(ofGetFrameRate() < 50)
   {
     triangleCoefficent -= .005;

@@ -11,7 +11,6 @@
 
 APVParticle::APVParticle(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
-  cout << "constructor APV Particle" << endl;
   init(position, limitVelocity, color, spring, friction, life);
   audioCoefficent = 0;
 }
