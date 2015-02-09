@@ -9,6 +9,8 @@
 #ifndef __APV_Visual__APVVisual__
 #define __APV_Visual__APVVisual__
 
+#define     LIMIT_OUTISDE 1000
+
 #include "ofMain.h"
 #include "APVParticleSystem.h"
 #include "ofxOsc.h"
@@ -23,7 +25,7 @@ public:
   void      update();
   void      windowResized(int newWidth, int newHeight);
   APVParticleSystem particleSystem;
-  GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0);
+  GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0, bool fromOutside = false);
   void audioIn(float * input, int bufferSize, int nChannels);
   
   float globalAlphaCoefficent;
@@ -48,6 +50,10 @@ public:
   float trianglePerimeterCoefficent;
   float maxRepulsionForce;
   ofColor triangleColor;
+  
+  int totNewPointToDraw = 0;
+  int totPointAlreadyDraw = 0;
+  int totPrevPoint = 0;
   
 private:
   ofFbo     mainFbo;

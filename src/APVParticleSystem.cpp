@@ -29,7 +29,7 @@ APVParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVeloci
   APVParticle* particle = new APVParticle(newPosition, maxVelocity * percParticleSpeed, ofColor(255), sameSpring, sameFriction);
   particle->target = newPosition;
   particles.push_back(particle);
-  particle = NULL;
+  //particle = NULL;
   return particle;
 }
 
@@ -116,6 +116,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
           APVParticle* tempParticle = (APVParticle*)(*vItr);
           float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
           tempParticle = NULL;
+          alpha = 255;
           ofSetColor(255, alpha);
           ofCircle((*vItr)->position, 1);
           ofPopStyle();
@@ -164,7 +165,7 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
   float perimeter = getTrianglePerimeter(firstPoint, secondPoint, thirdPoint);
   
   APVParticle* tempParticle = (APVParticle*)(*firstPoint);
-  alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+  alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 50;
   tempParticle = NULL;
   ofPushStyle();
   
@@ -198,12 +199,10 @@ float APVParticleSystem::getTrianglePerimeter(vector<GoofyParticle*>::iterator f
   return abs(ofDist((*firstPoint)->position.x, (*firstPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y)) + abs(ofDist((*firstPoint)->position.x, (*firstPoint)->position.y, (*secondPoint)->position.x, (*secondPoint)->position.y)) + abs(ofDist((*secondPoint)->position.x, (*secondPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y));
 }
 
-
-
 void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
 {
   APVParticle* tempParticle = (APVParticle*)(*vItr);
-  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 100;
   tempParticle = NULL;
   ofPushStyle();
   vector<GoofyParticle*>::iterator prevParticle = vItr - 1;
@@ -219,7 +218,7 @@ void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
 void APVParticleSystem::drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn)
 {
   APVParticle* tempParticle = (APVParticle*)(*vItr);
-  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 100;
   tempParticle = NULL;
   float distance = (*vItr)->position.distance((*pPointerIn)->position);
   if(distance > visual->minDistancePointToPoint * visual->distancePointToPointCoefficent && distance < visual->maxDistancePointToPoint * visual->distancePointToPointCoefficent)

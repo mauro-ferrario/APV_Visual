@@ -13,6 +13,7 @@ APVVisual::APVVisual()
   
 }
 
+
 void APVVisual::setup()
 {
   size = ofVec2f(ofGetWindowWidth(), ofGetWindowHeight());
@@ -65,6 +66,10 @@ void APVVisual::setup()
   mapToFloatValue["/Movement/Same_Friction"] =  &particleSystem.sameFriction;;
   mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem.repulsionForce;;
   mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem.sameLimitVelocity;;
+  
+  totNewPointToDraw = 0;
+  totPointAlreadyDraw = 0;
+  totPrevPoint = 0;
 }
 
 void APVVisual::initOSC()
@@ -79,7 +84,7 @@ void APVVisual::receiveMessagges()
     ofxOscMessage m;
     receiver.getNextMessage( &m );
     string messageAddress = m.getAddress();
-    cout << messageAddress << endl;
+    //cout << messageAddress << endl;
     if ( messageAddress == "/addSinglePoint" )
     {
       ofVec3f position = ofVec3f(m.getArgAsFloat( 0 ) * ofGetWindowWidth(), m.getArgAsFloat( 1 ) * ofGetWindowHeight());
@@ -97,7 +102,84 @@ void APVVisual::receiveMessagges()
       triangleColor.r = ofToFloat(colorChannels[0])*255;
       triangleColor.g = ofToFloat(colorChannels[1])*255;
       triangleColor.b = ofToFloat(colorChannels[2])*255;
+    }
+    else if ( m.getAddress() == "/loadShape" )
+    {
+      int totPointBefore = particleSystem.particles.size();;
+      cout << "**************************" << endl;
+      cout << "TOT PREV POINT " <<  totPointBefore << endl;
+      cout << "TOT NEW POINT " <<  m.getArgAsInt32( 0 )<< endl;
       
+      totNewPointToDraw = m.getArgAsInt32( 0 );
+      totPointAlreadyDraw = 0;
+      totPrevPoint = totPointBefore;
+      
+      if(totPrevPoint - m.getArgAsInt32( 0 ) > 0)
+      {
+        cout << "DFAADFDFSSDFSDF" << endl;
+        // Pulisci altri punti
+        for(int a = totNewPointToDraw; a < totPrevPoint; a++)
+        {
+          particleSystem.particles[a]->target.x = NULL;
+          particleSystem.particles[a]->lifeActive = true;
+          particleSystem.particles[a]->life = 10;
+          ofVec2f center = ofVec2f(ofGetWindowWidth()*.5, ofGetWindowHeight()*.5);
+          float radius = ofGetWindowWidth()*.5;
+          float force = 500;
+          float limitSpeed = false;
+          GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
+          particleSystem.particles[a]->applyRepulsion(repeller, false);
+          delete repeller;
+          repeller = NULL;
+        }
+      }
+    }
+    else if ( m.getAddress() == "/addPoint" )
+    {
+      float pointToDrawNow = m.getArgAsFloat( 0 );
+      int totPointAlreadyDraw = this->totPointAlreadyDraw;
+      //totPointAlreadyDraw = 0;
+      int totPrevPoint = particleSystem.particles.size(); // this->totPrevPoint;
+      cout << "TOT POINT TO ADD " << pointToDrawNow << endl;
+      if(totPrevPoint > 0 && totPrevPoint > totPointAlreadyDraw)
+      {
+        int cont = 0;
+        cout << "CAmbio target" << endl;
+        for(int a = totPointAlreadyDraw; a < pointToDrawNow; a++)
+        {
+          if(cont <= pointToDrawNow)
+          {
+            if(a < totPrevPoint)
+            {
+              ofPoint tempPoint;
+              tempPoint.x = m.getArgAsFloat( 1 + (cont * 2)) * ofGetWindowWidth();
+              tempPoint.y = m.getArgAsFloat( (1 + (cont * 2) + 1)) * ofGetWindowHeight();
+              particleSystem.particles[a]->setTarget(tempPoint);
+              this->totPointAlreadyDraw++;
+            }
+            else
+            {
+              this->totPointAlreadyDraw++;
+              ofVec3f targetPos;
+              targetPos.x = m.getArgAsFloat( 1 + (cont * 2) ) * ofGetWindowWidth();
+              targetPos.y = m.getArgAsFloat( (1 + (cont * 2) + 1) ) * ofGetWindowHeight();
+              addParticle(targetPos, particleSystem.sameLimitVelocity, 0, true);
+            }
+            cont++;
+          }
+        }
+      }
+      else
+      {
+        for(int a = 0; a < pointToDrawNow; a++)
+        {
+          this->totPointAlreadyDraw++;
+          ofVec3f targetPos = ofVec3f(0);
+          targetPos.x = m.getArgAsFloat( 1 + (a * 2)) * ofGetWindowWidth();
+          targetPos.y = m.getArgAsFloat( 1 + (a * 2) + 1) * ofGetWindowHeight();
+          addParticle(targetPos, particleSystem.sameLimitVelocity, 0, true);
+        }
+      }
     }
     if(mapToBoolValue[messageAddress])
     {
@@ -213,9 +295,23 @@ void APVVisual::draw()
   ofPopStyle();
 }
 
-GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
+GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life, bool fromOutside)
 {
-  particleSystem.addParticle(newPosition, maxVelocity, life);
+  APVParticle* tempParticle = particleSystem.addParticle(newPosition, maxVelocity, life);
+  if(fromOutside)
+  {
+    ofVec2f newPoint;
+    if(ofRandom(5) > 2.5)
+      newPoint.x = ofGetWindowWidth() + ofRandom(0, LIMIT_OUTISDE * .5);
+    else
+      newPoint.x = -ofRandom(0, LIMIT_OUTISDE * .5);
+    if(ofRandom(5) > 2.5)
+      newPoint.y =  ofGetWindowHeight() + ofRandom(0, LIMIT_OUTISDE * .5);
+    else
+      newPoint.y =  -ofRandom(0, LIMIT_OUTISDE * .5);
+    tempParticle->position = newPoint;
+  }
+  tempParticle = NULL;
 }
 
 void APVVisual::windowResized(int newWidth, int newHeight)
