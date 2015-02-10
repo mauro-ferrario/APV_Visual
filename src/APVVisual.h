@@ -15,6 +15,7 @@
 #include "APVParticleSystem.h"
 #include "ofxOsc.h"
 #include<tr1/unordered_map>
+#include "ofxSyphon.h"
 
 class APVVisual
 {
@@ -54,6 +55,7 @@ public:
   int totNewPointToDraw = 0;
   int totPointAlreadyDraw = 0;
   int totPrevPoint = 0;
+  ofxSyphonServer individualTextureSyphonServer;
   
 private:
   ofFbo     mainFbo;

@@ -49,6 +49,8 @@ void APVVisual::setup()
   initParticleSystem();
   initOSC();
   
+  individualTextureSyphonServer.setName("APV_Visual");
+  
   
   mapToBoolValue["/Effect/Draw_point"] = &bDrawPoint;
   mapToBoolValue["/Effect/Draw_triangle"] = &bDrawTriangle;
@@ -98,7 +100,6 @@ void APVVisual::receiveMessagges()
     {
       string color = m.getArgAsString(0);
       vector<string> colorChannels = ofSplitString(color, ",");
-      cout << color << endl;
       triangleColor.r = ofToFloat(colorChannels[0])*255;
       triangleColor.g = ofToFloat(colorChannels[1])*255;
       triangleColor.b = ofToFloat(colorChannels[2])*255;
@@ -106,18 +107,12 @@ void APVVisual::receiveMessagges()
     else if ( m.getAddress() == "/loadShape" )
     {
       int totPointBefore = particleSystem.particles.size();;
-      cout << "**************************" << endl;
-      cout << "TOT PREV POINT " <<  totPointBefore << endl;
-      cout << "TOT NEW POINT " <<  m.getArgAsInt32( 0 )<< endl;
-      
       totNewPointToDraw = m.getArgAsInt32( 0 );
       totPointAlreadyDraw = 0;
       totPrevPoint = totPointBefore;
       
       if(totPrevPoint - m.getArgAsInt32( 0 ) > 0)
       {
-        cout << "DFAADFDFSSDFSDF" << endl;
-        // Pulisci altri punti
         for(int a = totNewPointToDraw; a < totPrevPoint; a++)
         {
           particleSystem.particles[a]->target.x = NULL;
@@ -140,11 +135,9 @@ void APVVisual::receiveMessagges()
       int totPointAlreadyDraw = this->totPointAlreadyDraw;
       //totPointAlreadyDraw = 0;
       int totPrevPoint = particleSystem.particles.size(); // this->totPrevPoint;
-      cout << "TOT POINT TO ADD " << pointToDrawNow << endl;
       if(totPrevPoint > 0 && totPrevPoint > totPointAlreadyDraw)
       {
         int cont = 0;
-        cout << "CAmbio target" << endl;
         for(int a = totPointAlreadyDraw; a < pointToDrawNow; a++)
         {
           if(cont <= pointToDrawNow)
@@ -255,6 +248,8 @@ void APVVisual::initParticleSystem()
 
 void APVVisual::allocateFBO(int width, int height)
 {
+  cout << width << endl;
+  cout << height << endl;
   mainFbo.allocate(width, height, GL_RGBA32F);
   mainFbo.begin();
   ofClear(0,255);
@@ -277,6 +272,7 @@ void APVVisual::update()
   ofClear(0,255);
   particleSystem.updateAndDrawWithVisual();
   mainFbo.end();
+  ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
 void APVVisual::drawBackground()
@@ -289,10 +285,11 @@ void APVVisual::drawBackground()
 
 void APVVisual::draw()
 {
-  ofPushStyle();
-  ofSetColor(255);
-  mainFbo.draw(0,0);
-  ofPopStyle();
+//  ofPushStyle();
+//  ofSetColor(255);
+//  mainFbo.draw(0,0);
+//  ofPopStyle();
+  individualTextureSyphonServer.publishTexture(&mainFbo.getTextureReference());
 }
 
 GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life, bool fromOutside)
