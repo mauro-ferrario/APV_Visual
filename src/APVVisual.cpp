@@ -54,7 +54,7 @@ void APVVisual::setup()
   
   individualTextureSyphonServer.setName("APV_Visual");
   
-  
+  mapToFloatValue["/Effect/Scale_Factor"] = &scaleFactor;
   mapToBoolValue["/Effect/Draw_point"] = &bDrawPoint;
   mapToBoolValue["/Effect/Draw_triangle"] = &bDrawTriangle;
   mapToBoolValue["/Effect/Connect_to_prev_point"] = &bConnectPointToPrev;
@@ -77,6 +77,8 @@ void APVVisual::setup()
   totNewPointToDraw = 0;
   totPointAlreadyDraw = 0;
   totPrevPoint = 0;
+  maxScaleFactor = 10;
+  scaleFactor = 1;
   
   
   overlayHandler.setup(this);
@@ -292,7 +294,19 @@ void APVVisual::update()
   }
   mainFbo.begin();
   ofDisableAlphaBlending();
-  ofClear(0,255);
+  ofClear(0,0);
+  ofPushStyle();
+  if(invertColor)
+    ofSetColor(255);
+  else
+    ofSetColor(0);
+  ofRect(0,0,size.x, size.y);
+  ofPopStyle();
+  float scale = maxScaleFactor * (1-scaleFactor);
+  ofPushMatrix();
+  ofTranslate(1920*.5, 1080*.5);
+  ofScale(scale,scale);
+  ofTranslate(-1920*.5, -1080*.5);
   particleSystem.updateAndDrawWithVisual();
   ofPopMatrix();
   overlayHandler.draw();
