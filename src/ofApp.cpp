@@ -7,13 +7,14 @@ void ofApp::setup(){
   ofSetVerticalSync(true);
   visual.setup();
   int bufferSize = 256;
-  soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+  ofSoundStreamSetup(0, 1, this, 44100, beat.getBufferSize(), 4);
+  //soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   visual.update();
-
+  beat.update(ofGetElapsedTimeMillis());
 }
 
 //--------------------------------------------------------------
@@ -44,7 +45,8 @@ void ofApp::keyReleased(int key){
 
 void ofApp::audioIn(float * input, int bufferSize, int nChannels)
 {
-  visual.audioIn(input, bufferSize, nChannels);
+  beat.audioReceived(input, bufferSize, nChannels);
+  visual.audioIn(input, bufferSize, nChannels, beat.kick());
 }
 
 //--------------------------------------------------------------

@@ -28,7 +28,7 @@ public:
   void      windowResized(int newWidth, int newHeight);
   APVParticleSystem particleSystem;
   GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0, bool fromOutside = false);
-  void audioIn(float * input, int bufferSize, int nChannels);
+  void audioIn(float * input, int bufferSize, int nChannels, float beatValue);
   
   float globalAlphaCoefficent;
   bool bDrawPoint;
@@ -46,16 +46,23 @@ public:
   float maxDistancePointToPoint;
   float distancePointToPointCoefficent;
   
+  float volumeInvertCoefficent;
+  
   
   float minTrianglePerimeter;
   float maxTrianglePerimeter;
   float trianglePerimeterCoefficent;
   float maxRepulsionForce;
+  float scaleFactor;
+  float maxScaleFactor;
   ofColor triangleColor;
   
   int totNewPointToDraw = 0;
   int totPointAlreadyDraw = 0;
   int totPrevPoint = 0;
+  bool  invertColor;
+  int   invertColorTimer;
+  float volumeCoefficent;
   ofxSyphonServer individualTextureSyphonServer;
   OverlayHandler overlayHandler;
   

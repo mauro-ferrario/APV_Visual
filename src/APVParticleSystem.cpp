@@ -117,7 +117,10 @@ void APVParticleSystem::updateAndDrawWithVisual()
           float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
           tempParticle = NULL;
           alpha = 255;
-          ofSetColor(255, alpha);
+          if(!visual->invertColor)
+            ofSetColor(255, alpha);
+          else
+            ofSetColor(0, alpha);
           ofCircle((*vItr)->position, 1);
           ofPopStyle();
         }
@@ -170,7 +173,11 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
   ofPushStyle();
   
   ofColor triangleColor = visual->triangleColor;
+  
+  if(visual->invertColor)
+    triangleColor.invert();
   triangleColor.a = alpha;
+  
   
   if(bSameColorTriangle)
   {
@@ -202,12 +209,15 @@ float APVParticleSystem::getTrianglePerimeter(vector<GoofyParticle*>::iterator f
 void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
 {
   APVParticle* tempParticle = (APVParticle*)(*vItr);
-  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 100;
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 255 * 2;
   tempParticle = NULL;
   ofPushStyle();
   vector<GoofyParticle*>::iterator prevParticle = vItr - 1;
   ofPushStyle();
-  ofSetColor(255, alpha);
+  if(!visual->invertColor)
+    ofSetColor(255, alpha);
+  else
+    ofSetColor(0, alpha);
   if((*prevParticle)->active)
   {
     ofLine((*vItr)->position, (*prevParticle)->position);
@@ -224,7 +234,10 @@ void APVParticleSystem::drawConnectPoints(vector<GoofyParticle*>::iterator vItr,
   if(distance > visual->minDistancePointToPoint * visual->distancePointToPointCoefficent && distance < visual->maxDistancePointToPoint * visual->distancePointToPointCoefficent)
   {
     ofPushStyle();
-    ofSetColor(255, alpha);
+    if(!visual->invertColor)
+      ofSetColor(255, alpha);
+    else
+      ofSetColor(0, alpha);
     ofLine((*vItr)->position, (*pPointerIn)->position);
     ofPopStyle();
   }

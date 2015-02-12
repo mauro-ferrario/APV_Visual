@@ -36,6 +36,9 @@ void APVVisual::setup()
   bSameColorTriangle      = true;
   bTimeAlphaTriangle      = true;
   bFrameHandler           = true;
+  invertColor             = false;
+  invertColorTimer        = 0;
+  volumeInvertCoefficent  = 1.5;
   
   left.assign(256, 0.0);
   right.assign(256, 0.0);
@@ -67,7 +70,9 @@ void APVVisual::setup()
   mapToFloatValue["/Movement/Same_Spring"] = &particleSystem.sameSpring;
   mapToFloatValue["/Movement/Same_Friction"] =  &particleSystem.sameFriction;;
   mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem.repulsionForce;;
-  mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem.sameLimitVelocity;;
+  mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem.sameLimitVelocity;
+  
+  mapToFloatValue["/General/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
   
   totNewPointToDraw = 0;
   totPointAlreadyDraw = 0;
@@ -197,8 +202,24 @@ void APVVisual::receiveMessagges()
   }
 }
 
-void APVVisual::audioIn(float * input, int bufferSize, int nChannels)
+void APVVisual::audioIn(float * input, int bufferSize, int nChannels, float beatValue)
 {
+  
+    if(beatValue > .95 * volumeInvertCoefficent && !invertColor)
+    {
+      invertColor = true;
+      invertColorTimer = 0;
+    }
+  
+    if(invertColor)
+    {
+      invertColorTimer++;
+      if(invertColorTimer > 10)
+      {
+        invertColor = false;
+      }
+    }
+  
   float curVol = 0.0;
   
   // samples are "interleaved"
@@ -240,28 +261,17 @@ void APVVisual::audioIn(float * input, int bufferSize, int nChannels)
     globalAlphaCoefficent = ofMap(volume, 0, .4, 0, 1);
   else
     globalAlphaCoefficent = 1;
-  
-  //   globalAlphaCoefficent = 1;
-  
   bufferCounter++;
-  
- //cout << volume << endl;
 }
 
 void APVVisual::initParticleSystem()
 {
   particleSystem.init();
   particleSystem.setup(this);
-//  particleSystem.initGoofyNoise();
-//  particleSystem.moveNoise = true;
-//  particleSystem.goofyPerlinNoiseForce = .02;
-//  particleSystem.goofyPerlinNoiseForce = .15;
 }
 
 void APVVisual::allocateFBO(int width, int height)
 {
-  cout << width << endl;
-  cout << height << endl;
   mainFbo.allocate(width, height, GL_RGBA32F);
   mainFbo.begin();
   ofClear(0,255);
@@ -270,6 +280,7 @@ void APVVisual::allocateFBO(int width, int height)
 
 void APVVisual::update()
 {
+  volumeCoefficent = ofMap(ofGetMouseX(), 0, 1920, 0,1, true);
   receiveMessagges();
   if(ofGetFrameRate() < 50)
   {
