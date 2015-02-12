@@ -114,7 +114,7 @@ void APVVisual::receiveMessagges()
       triangleColor.g = ofToFloat(colorChannels[1])*255;
       triangleColor.b = ofToFloat(colorChannels[2])*255;
     }
-    else if ( m.getAddress() == "/loadShape" )
+    else if (messageAddress == "/loadShape" )
     {
       int totPointBefore = particleSystem.particles.size();;
       totNewPointToDraw = m.getArgAsInt32( 0 );
@@ -139,7 +139,7 @@ void APVVisual::receiveMessagges()
         }
       }
     }
-    else if ( m.getAddress() == "/addPoint" )
+    else if ( messageAddress == "/addPoint" )
     {
       float pointToDrawNow = m.getArgAsFloat( 0 );
       int totPointAlreadyDraw = this->totPointAlreadyDraw;
