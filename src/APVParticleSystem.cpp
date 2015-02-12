@@ -42,7 +42,6 @@ void APVParticleSystem::updateAndDrawWithVisual()
   int cont = 0;
   int totParticles = particles.size();
   int halfTotParticles = totParticles*.5;
-  int totMax = 0;
   ofVec2f center = ofVec2f(ofGetWindowWidth()*.5, ofGetWindowHeight()*.5);
   
   while ( vItr != particles.end() )
@@ -74,11 +73,9 @@ void APVParticleSystem::updateAndDrawWithVisual()
       {
         if(cont < halfTotParticles)
         {
-          if(visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256)] > 0)
+          if(visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256, true)] > 0)
           {
-            if(cont < 10)
-              totMax += visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256)];
-            tempParticle->audioCoefficent = visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256)];
+            tempParticle->audioCoefficent = visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256, true)];
             float radius = ofGetWindowWidth()*.5;
             float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
             float limitSpeed = false;
@@ -91,9 +88,22 @@ void APVParticleSystem::updateAndDrawWithVisual()
         }
         else
         {
-          if(visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256)] > 0)
+          if(visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256, true)] > 0)
           {
-            tempParticle->audioCoefficent = visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256)];
+            tempParticle->audioCoefficent = visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256, true)];
+            float radius = ofGetWindowWidth()*.5;
+            float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
+            float limitSpeed = false;
+            GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
+            
+            (*vItr)->applyRepulsion(repeller, false);
+            delete repeller;
+            repeller = NULL;
+          }
+          // If i don't write this... one particle doesn't update audioCoefficent :-O
+          if(cont == particles.size() -1) // || cont == particles.size()-1 || cont == 0)
+          {
+            tempParticle->audioCoefficent = visual->right[250];
             float radius = ofGetWindowWidth()*.5;
             float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
             float limitSpeed = false;
