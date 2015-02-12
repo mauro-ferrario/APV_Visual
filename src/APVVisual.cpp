@@ -72,6 +72,9 @@ void APVVisual::setup()
   totNewPointToDraw = 0;
   totPointAlreadyDraw = 0;
   totPrevPoint = 0;
+  
+  
+  overlayHandler.setup(this);
 }
 
 void APVVisual::initOSC()
@@ -174,6 +177,15 @@ void APVVisual::receiveMessagges()
         }
       }
     }
+    else if(messageAddress == "/FadeIn")
+    {
+      overlayHandler.startIntro(m.getArgAsInt32(0));
+    }
+    else if(messageAddress == "/FadeOut")
+    {
+      overlayHandler.startOutro(m.getArgAsInt32(0));
+    }
+    
     if(mapToBoolValue[messageAddress])
     {
       *mapToBoolValue[messageAddress] = bool(m.getArgAsInt32(0));
@@ -271,6 +283,8 @@ void APVVisual::update()
   ofDisableAlphaBlending();
   ofClear(0,255);
   particleSystem.updateAndDrawWithVisual();
+  ofPopMatrix();
+  overlayHandler.draw();
   mainFbo.end();
   ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }

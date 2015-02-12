@@ -16,6 +16,7 @@
 #include "ofxOsc.h"
 #include<tr1/unordered_map>
 #include "ofxSyphon.h"
+#include "OverlayHandler.h"
 
 class APVVisual
 {
@@ -56,6 +57,7 @@ public:
   int totPointAlreadyDraw = 0;
   int totPrevPoint = 0;
   ofxSyphonServer individualTextureSyphonServer;
+  OverlayHandler overlayHandler;
   
 private:
   ofFbo     mainFbo;
@@ -81,6 +83,7 @@ private:
   float                   maxVolumeValue;
   
   int totPoints;
+  
 };
 
 #endif /* defined(__APV_Visual__APVVisual__) */
