@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  ofSetFrameRate(60);
+  ofSetFrameRate(30);
   ofBackground(0);
   ofSetVerticalSync(true);
   visual.setup();
@@ -33,14 +33,10 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
   if(key == 'f')
     ofToggleFullscreen();
-  if(key == 'q')
-    visual.bDrawPoint = !visual.bDrawPoint;
-  if(key == 'w')
-    visual.bConnectPointToPrev = !visual.bConnectPointToPrev;
-  if(key == 'e')
-    visual.bDrawLinePointToPoint = !visual.bDrawLinePointToPoint;
-  if(key == 'r')
-    visual.bDrawTriangle = !visual.bDrawTriangle;
+  if(key == 'a')
+    visual.overlayHandler.startIntro(0);
+  if(key == 's')
+    visual.overlayHandler.startOutro(0);
 }
 
 void ofApp::audioIn(float * input, int bufferSize, int nChannels)
