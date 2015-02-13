@@ -22,6 +22,6 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     APVVisual visual;
     ofSoundStream           soundStream;
-  void audioIn(float * input, int bufferSize, int nChannels);
-  ofxBeat beat;
+    void audioIn(float * input, int bufferSize, int nChannels);
+    ofxBeat beat;
 };
