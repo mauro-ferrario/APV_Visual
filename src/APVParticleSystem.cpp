@@ -185,7 +185,8 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
   ofColor triangleColor = visual->triangleColor;
   
   if(visual->invertColor)
-    triangleColor.invert();
+    triangleColor = ofColor(0);
+  //  triangleColor.invert();
   triangleColor.a = alpha;
   
   
@@ -219,7 +220,7 @@ float APVParticleSystem::getTrianglePerimeter(vector<GoofyParticle*>::iterator f
 void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr)
 {
   APVParticle* tempParticle = (APVParticle*)(*vItr);
-  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 255 * 2;
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 255;
   tempParticle = NULL;
   ofPushStyle();
   vector<GoofyParticle*>::iterator prevParticle = vItr - 1;
