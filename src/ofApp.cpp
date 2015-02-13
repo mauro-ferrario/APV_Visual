@@ -8,6 +8,7 @@ void ofApp::setup(){
   visual.setup();
   int bufferSize = 256;
   ofSoundStreamSetup(0, 1, this, 44100, beat.getBufferSize(), 4);
+  
   //soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 }
 
@@ -34,9 +35,7 @@ void ofApp::keyReleased(int key){
   if(key == 'f')
     ofToggleFullscreen();
   if(key == 'a')
-    visual.overlayHandler.startIntro(0);
-  if(key == 's')
-    visual.overlayHandler.startOutro(0);
+    visual.track.play();
 }
 
 void ofApp::audioIn(float * input, int bufferSize, int nChannels)
