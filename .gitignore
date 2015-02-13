@@ -112,3 +112,5 @@ APV_Visual.xcodeproj/project.pbxproj
 *.pbxproj
 
 *.pbxproj
+
+bin/data/sounds/LPM_3.wav
