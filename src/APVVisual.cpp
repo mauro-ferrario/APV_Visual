@@ -81,6 +81,11 @@ void APVVisual::setup()
   scaleFactor = 1;
   
   
+  track.loadSound("sounds/LPM_3.wav");
+  track.setLoop(false);
+//  track.play();
+  //soundStream.
+  
   overlayHandler.setup(this);
 }
 
@@ -97,6 +102,22 @@ void APVVisual::receiveMessagges()
     receiver.getNextMessage( &m );
     string messageAddress = m.getAddress();
     //cout << messageAddress << endl;
+    if ( messageAddress == "/Play" )
+    {
+      if(m.getArgAsInt32(0) == 0)
+      {
+        track.setPaused(true);
+      }
+      else
+      {
+        track.setPaused(false);
+      }
+    }
+    if ( messageAddress == "/Reset_Track" )
+    {
+      track.stop();
+      track.play();
+    }
     if ( messageAddress == "/addSinglePoint" )
     {
       ofVec3f position = ofVec3f(m.getArgAsFloat( 0 ) * ofGetWindowWidth(), m.getArgAsFloat( 1 ) * ofGetWindowHeight());

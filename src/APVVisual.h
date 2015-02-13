@@ -65,6 +65,8 @@ public:
   float volumeCoefficent;
   ofxSyphonServer individualTextureSyphonServer;
   OverlayHandler overlayHandler;
+		ofSoundPlayer		track;
+  float             currentTimePause;
   
 private:
   ofFbo     mainFbo;
