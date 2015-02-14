@@ -172,12 +172,11 @@ void APVVisual::receiveMessagges()
             }
             else
             {
-             // this->totPointAlreadyDraw++;
+              this->totPointAlreadyDraw++; // è giusto?
               ofVec3f targetPos;
               targetPos.x = m.getArgAsFloat( 1 + (cont * 2) ) * ofGetWindowWidth();
               targetPos.y = m.getArgAsFloat( (1 + (cont * 2) + 1) ) * ofGetWindowHeight();
               addParticle(targetPos, particleSystem.sameLimitVelocity, 0, true);
-            //  totNewPointToDraw--;
             }
             cont++;
           }
