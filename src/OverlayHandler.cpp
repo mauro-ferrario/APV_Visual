@@ -26,8 +26,8 @@ void OverlayHandler::initFont()
 {
   ofTrueTypeFont::setGlobalDpi(72);
   font.loadFont("MuseoSans_500.otf", 60, true, true);
-  font.setLineHeight(18.0f);
-  font.setLetterSpacing(1.037);
+  font.setLineHeight(13.0f);
+  font.setLetterSpacing(1.5);
 }
 
 void OverlayHandler::draw()
@@ -61,18 +61,21 @@ void OverlayHandler::startAnimation(int element, OverlayElementType type)
 
 void OverlayHandler::initElements()
 {
-  OverlayTextElement* textElement = new OverlayTextElement(.5,0,.5,0, "areas", &font, ofVec2f(1116, 350));
-  OverlayTextElement* textElement1 = new OverlayTextElement(.5,0,.5,0, "artists", &font, ofVec2f(1415, 350));
-  OverlayTextElement* textElement2 = new OverlayTextElement(.5,0,.5,0, "countries", &font, ofVec2f(1240, 350));
-  OverlayTextElement* textElement3 = new OverlayTextElement(.5,0,.5,0, "WorldWide Events", &font, ofVec2f(1240, 350));
+  OverlayTextElement* textElement = new OverlayTextElement(0,0,0,0, "AREAS", &font, ofVec2f(1116, 350));
+  OverlayTextElement* textElement1 = new OverlayTextElement(0,0,0,0, "ARTISTS", &font, ofVec2f(1415, 350));
+  OverlayTextElement* textElement2 = new OverlayTextElement(0,0,0,0, "COUNTRIES", &font, ofVec2f(1240, 350));
+  OverlayTextElement* textElement3 = new OverlayTextElement(0,0,0,0, "WORLDWIDE", &font, ofVec2f(1240, 350));
+  OverlayTextElement* textElement4 = new OverlayTextElement(0,0,0,0, "EVENTS", &font, ofVec2f(1469, 440));
   addElement(textElement);
   addElement(textElement1);
   addElement(textElement2);
   addElement(textElement3);
+  addElement(textElement4);
   textElement = NULL;
   textElement1 = NULL;
   textElement2 = NULL;
   textElement3 = NULL;
+  textElement4 = NULL;
 }
 
 void OverlayHandler::addElement(OverlayElement* element)
