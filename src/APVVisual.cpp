@@ -82,14 +82,11 @@ void APVVisual::setup()
   totPrevPoint = 0;
   maxScaleFactor = 10;
   scaleFactor = 1;
-  
-  
+  overlayHandler.setup(this);
+  ofSleepMillis(1000);
   track.loadSound("sounds/LPM_3.wav");
   track.setLoop(false);
-//  track.play();
-  //soundStream.
   
-  overlayHandler.setup(this);
 }
 
 void APVVisual::initOSC()
@@ -140,43 +137,32 @@ void APVVisual::receiveMessagges()
     }
     else if (messageAddress == "/loadShape" )
     {
-      int totPointBefore = particleSystem.particles.size();;
       totNewPointToDraw = m.getArgAsInt32( 0 );
       totPointAlreadyDraw = 0;
-      totPrevPoint = totPointBefore;
-      
-      if(totPrevPoint - m.getArgAsInt32( 0 ) > 0)
+      this->totPrevPoint = particleSystem.particles.size();
+      if(this->totPrevPoint > totNewPointToDraw)
       {
-        for(int a = totNewPointToDraw; a < totPrevPoint; a++)
-        {
-          particleSystem.particles[a]->target.x = NULL;
-          particleSystem.particles[a]->lifeActive = true;
-          particleSystem.particles[a]->life = 10;
-          ofVec2f center = ofVec2f(ofGetWindowWidth()*.5, ofGetWindowHeight()*.5);
-          float radius = ofGetWindowWidth()*.5;
-          float force = 500;
-          float limitSpeed = false;
-          GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
-          particleSystem.particles[a]->applyRepulsion(repeller, false);
-          delete repeller;
-          repeller = NULL;
-        }
+        int totToRemove = this->totPrevPoint-totNewPointToDraw; 
+          for(int z = 0; z < totToRemove; z++)
+          {
+            particleSystem.particles[this->totPrevPoint - 1 - z]->target.x = NULL;
+            particleSystem.particles[this->totPrevPoint - 1 - z]->lifeActive = true;
+            particleSystem.particles[this->totPrevPoint - 1 - z]->life = 10;
+          }
       }
     }
     else if ( messageAddress == "/addPoint" )
     {
       float pointToDrawNow = m.getArgAsFloat( 0 );
-      int totPointAlreadyDraw = this->totPointAlreadyDraw;
-      //totPointAlreadyDraw = 0;
-      int totPrevPoint = particleSystem.particles.size(); // this->totPrevPoint;
-      if(totPrevPoint > 0 && totPrevPoint > totPointAlreadyDraw)
+      //      if(this->totPointAlreadyDraw > 0)
+     if(totPrevPoint > 0 && totPrevPoint >= this->totPointAlreadyDraw)
       {
         int cont = 0;
-        for(int a = totPointAlreadyDraw; a < pointToDrawNow; a++)
+        for(int a = totPointAlreadyDraw; a < this->totNewPointToDraw; a++)
         {
           if(cont <= pointToDrawNow)
           {
-            if(a < totPrevPoint)
+            if(a < this->totPrevPoint)
             {
               ofPoint tempPoint;
               tempPoint.x = m.getArgAsFloat( 1 + (cont * 2)) * ofGetWindowWidth();
@@ -186,11 +172,12 @@ void APVVisual::receiveMessagges()
             }
             else
             {
-              this->totPointAlreadyDraw++;
+             // this->totPointAlreadyDraw++;
               ofVec3f targetPos;
               targetPos.x = m.getArgAsFloat( 1 + (cont * 2) ) * ofGetWindowWidth();
               targetPos.y = m.getArgAsFloat( (1 + (cont * 2) + 1) ) * ofGetWindowHeight();
               addParticle(targetPos, particleSystem.sameLimitVelocity, 0, true);
+            //  totNewPointToDraw--;
             }
             cont++;
           }
