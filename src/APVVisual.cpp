@@ -51,8 +51,10 @@ void APVVisual::setup()
   maxRepulsionForce = 100;
   initParticleSystem();
   initOSC();
-  
+
+#ifdef USE_SYPHON
   individualTextureSyphonServer.setName("APV_Visual");
+#endif
   
   mapToFloatValue["/Effect/Scale_Factor"] = &scaleFactor;
   mapToBoolValue["/Effect/Draw_point"] = &bDrawPoint;
@@ -345,11 +347,16 @@ void APVVisual::drawBackground()
 
 void APVVisual::draw()
 {
-//  ofPushStyle();
-//  ofSetColor(255);
-//  mainFbo.draw(0,0);
-//  ofPopStyle();
+#ifndef USE_SYPHON
+  ofPushStyle();
+  ofSetColor(255);
+  mainFbo.draw(0,0);
+  ofPopStyle();
+#endif
+#ifdef USE_SYPHON
   individualTextureSyphonServer.publishTexture(&mainFbo.getTextureReference());
+  ofDrawBitmapString("Syphon active", ofPoint(10,10)):
+#endif
 }
 
 GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life, bool fromOutside)

@@ -10,12 +10,15 @@
 #define __APV_Visual__APVVisual__
 
 #define     LIMIT_OUTISDE 1000
+//#define     USE_SYPHON
 
 #include "ofMain.h"
 #include "APVParticleSystem.h"
 #include "ofxOsc.h"
 #include<tr1/unordered_map>
+#ifdef USE_SYPHON
 #include "ofxSyphon.h"
+#endif
 #include "OverlayHandler.h"
 
 class APVVisual
@@ -63,7 +66,9 @@ public:
   bool  invertColor;
   int   invertColorTimer;
   float volumeCoefficent;
+#ifdef USE_SYPHON
   ofxSyphonServer individualTextureSyphonServer;
+#endif
   OverlayHandler overlayHandler;
 		ofSoundPlayer		track;
   float             currentTimePause;
