@@ -16,6 +16,7 @@ APVVisual::APVVisual()
 
 void APVVisual::setup()
 {
+  cleanPointers();
   size = ofVec2f(ofGetWindowWidth(), ofGetWindowHeight());
   allocateFBO(size.x, size.y);
   backgroundColor = ofColor(0);
@@ -381,4 +382,28 @@ GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, lo
 void APVVisual::windowResized(int newWidth, int newHeight)
 {
   allocateFBO(newWidth, newHeight);
+}
+
+void APVVisual::cleanPointers()
+{
+  mapToFloatValue["/Effect/Scale_Factor"] = NULL;;
+  mapToBoolValue["/Effect/Draw_point"] = NULL;
+  mapToBoolValue["/Effect/Draw_triangle"] = NULL;
+  mapToBoolValue["/Effect/Connect_to_prev_point"] = NULL;
+  mapToBoolValue["/Effect/Connect_points"] = NULL;
+  mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"] = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Max_Line_Distance"] = NULL;
+  mapToFloatValue["/Effect/Triangles/Min_Perimeter"] = NULL;
+  mapToFloatValue["/Effect/Triangles/Max_Perimeter"] = NULL;
+  mapToFloatValue["/Movement/Same_Spring"] = NULL;
+  mapToFloatValue["/Movement/Same_Friction"] =  NULL;
+  mapToFloatValue["/Movement/Repulsion_Force"] =  NULL;
+  mapToFloatValue["/Movement/Particle_Speed"] =  NULL;
+  mapToFloatValue["/General/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
+}
+
+void APVVisual::exit()
+{
+  cleanPointers();
 }

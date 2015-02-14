@@ -32,6 +32,8 @@ public:
   APVParticleSystem particleSystem;
   GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0, bool fromOutside = false);
   void audioIn(float * input, int bufferSize, int nChannels, float beatValue);
+  void  cleanPointers();
+  void  exit();
   
   float globalAlphaCoefficent;
   bool bDrawPoint;
