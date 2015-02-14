@@ -320,6 +320,7 @@ void APVVisual::update()
   particleSystem.updateAndDrawWithVisual();
   ofPopMatrix();
   overlayHandler.draw();
+  
   mainFbo.end();
   ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
@@ -342,7 +343,7 @@ void APVVisual::draw()
 #endif
 #ifdef USE_SYPHON
   individualTextureSyphonServer.publishTexture(&mainFbo.getTextureReference());
-  ofDrawBitmapString("Syphon active", ofPoint(10,10)):
+  ofDrawBitmapString("Syphon active", ofPoint(10,60));
 #endif
 }
 
