@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "OverlayElement.h"
 #include "OverlayTextElement.h"
+#include "OverlayImageElement.h"
 
 class APVVisual;
 

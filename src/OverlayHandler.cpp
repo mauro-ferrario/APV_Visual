@@ -32,6 +32,7 @@ void OverlayHandler::initFont()
 
 void OverlayHandler::draw()
 {
+  ofEnableAlphaBlending();
   vector<OverlayElement*>::iterator it = elements.begin();
   while(it != elements.end())
   {
@@ -42,6 +43,7 @@ void OverlayHandler::draw()
       (*it)->draw(ofColor(0));
     it++;
   }
+  ofDisableAlphaBlending();
 }
 
 void OverlayHandler::startIntro(int element)
@@ -76,6 +78,11 @@ void OverlayHandler::initElements()
   textElement2 = NULL;
   textElement3 = NULL;
   textElement4 = NULL;
+  
+  
+  OverlayImageElement* imageElement1 = new OverlayImageElement(1,0,1,0, "images/gg.png", ofVec2f(400, 350));
+  addElement(imageElement1);
+  imageElement1 = NULL;
 }
 
 void OverlayHandler::addElement(OverlayElement* element)

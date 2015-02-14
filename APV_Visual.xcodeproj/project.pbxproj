@@ -40,6 +40,7 @@
 		34B409021A8975B300390E32 /* ofxSyphonServerDirectory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 34B408FD1A89756500390E32 /* ofxSyphonServerDirectory.mm */; };
 		34B409041A89769800390E32 /* Syphon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34B408F21A89756500390E32 /* Syphon.framework */; };
 		34B409061A8976C400390E32 /* Syphon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 34B409051A8976C400390E32 /* Syphon.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		34EE6E241A8F7D2B00F4A871 /* OverlayImageElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34EE6E221A8F7D2B00F4A871 /* OverlayImageElement.cpp */; };
 		34F230411A8BE0EB001F0AEE /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34F2303D1A8BE0EB001F0AEE /* fft.cpp */; };
 		34F230421A8BE0EB001F0AEE /* ofxBeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34F2303F1A8BE0EB001F0AEE /* ofxBeat.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
@@ -195,6 +196,8 @@
 		34B408FC1A89756500390E32 /* ofxSyphonServerDirectory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxSyphonServerDirectory.h; sourceTree = "<group>"; };
 		34B408FD1A89756500390E32 /* ofxSyphonServerDirectory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ofxSyphonServerDirectory.mm; sourceTree = "<group>"; };
 		34B409051A8976C400390E32 /* Syphon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Syphon.framework; sourceTree = "<group>"; };
+		34EE6E221A8F7D2B00F4A871 /* OverlayImageElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OverlayImageElement.cpp; sourceTree = "<group>"; };
+		34EE6E231A8F7D2B00F4A871 /* OverlayImageElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OverlayImageElement.h; sourceTree = "<group>"; };
 		34F2303D1A8BE0EB001F0AEE /* fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fft.cpp; path = ../../src/fft.cpp; sourceTree = "<group>"; };
 		34F2303E1A8BE0EB001F0AEE /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fft.h; path = ../../src/fft.h; sourceTree = "<group>"; };
 		34F2303F1A8BE0EB001F0AEE /* ofxBeat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxBeat.cpp; path = ../../src/ofxBeat.cpp; sourceTree = "<group>"; };
@@ -695,6 +698,8 @@
 				341C59E51A8C9F1900881A61 /* OverlayHandler.h */,
 				3447A9EA1A8CAE1B00B63937 /* OverlayElement.cpp */,
 				3447A9EB1A8CAE1B00B63937 /* OverlayElement.h */,
+				34EE6E221A8F7D2B00F4A871 /* OverlayImageElement.cpp */,
+				34EE6E231A8F7D2B00F4A871 /* OverlayImageElement.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -869,6 +874,7 @@
 				879A251454401BC0B6E4F238 /* OscTypes.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
+				34EE6E241A8F7D2B00F4A871 /* OverlayImageElement.cpp in Sources */,
 				341C5A141A8CA67C00881A61 /* ofxEasingSine.cpp in Sources */,
 				34AB140D1A83F13D00B8B7CE /* GoofyMagneticPoint.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
