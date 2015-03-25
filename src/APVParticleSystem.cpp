@@ -29,7 +29,6 @@ APVParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVeloci
   APVParticle* particle = new APVParticle(newPosition, maxVelocity * percParticleSpeed, ofColor(255), sameSpring, sameFriction);
   particle->target = newPosition;
   particles.push_back(particle);
-  //particle = NULL;
   return particle;
 }
 
@@ -100,8 +99,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
             delete repeller;
             repeller = NULL;
           }
-          // If i don't write this... one particle doesn't update audioCoefficent :-O
-          if(cont == particles.size() -1) // || cont == particles.size()-1 || cont == 0)
+          if(cont == particles.size() -1)
           {
             tempParticle->audioCoefficent = visual->right[250];
             float radius = ofGetWindowWidth()*.5;
