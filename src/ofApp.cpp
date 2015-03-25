@@ -34,6 +34,12 @@ void ofApp::keyReleased(int key){
     ofToggleFullscreen();
   if(key == 'a')
     visual.track.play();
+  if(key == 's')
+  {
+    ofPixels pixels;
+    visual.mainFbo.readToPixels(pixels);
+    ofSaveImage(pixels, "test.png");
+  }
 }
 
 void ofApp::audioIn(float * input, int bufferSize, int nChannels)
