@@ -24,7 +24,8 @@ public:
   virtual void            initFont();
   void                    initElements();
   void                    draw();
-	ofTrueTypeFont          font;
+  ofTrueTypeFont          font;
+  ofTrueTypeFont          font45;
   APVVisual*              visual;
   vector<OverlayElement*> elements;
   void                    startIntro(int element);
