@@ -25,9 +25,14 @@ void OverlayHandler::setup(APVVisual* visual)
 void OverlayHandler::initFont()
 {
   ofTrueTypeFont::setGlobalDpi(72);
-  font.loadFont("MuseoSans_500.otf", 60, true, true);
+  font.loadFont("MuseoSans_500.otf", 55, true, true);
   font.setLineHeight(13.0f);
-  font.setLetterSpacing(1.5);
+  font.setLetterSpacing(2);
+  
+  font45.loadFont("MuseoSans_500.otf", 45, true, true);
+  font45.setLineHeight(13.0f);
+  font45.setLetterSpacing(2);
+//pre  font45.setSpaceSize(<#float size#>)
 }
 
 void OverlayHandler::draw()
@@ -63,11 +68,11 @@ void OverlayHandler::startAnimation(int element, OverlayElementType type)
 
 void OverlayHandler::initElements()
 {
-  OverlayTextElement* textElement = new OverlayTextElement(0,0,0,0, "AREAS", &font, ofVec2f(1116, 350));
-  OverlayTextElement* textElement1 = new OverlayTextElement(0,0,0,0, "ARTISTS", &font, ofVec2f(1415, 350));
-  OverlayTextElement* textElement2 = new OverlayTextElement(0,0,0,0, "COUNTRIES", &font, ofVec2f(1240, 350));
-  OverlayTextElement* textElement3 = new OverlayTextElement(0,0,0,0, "WORLDWIDE", &font, ofVec2f(1240, 350));
-  OverlayTextElement* textElement4 = new OverlayTextElement(0,0,0,0, "EVENTS", &font, ofVec2f(1469, 440));
+  OverlayImageElement* textElement = new OverlayImageElement(.3,0,.3,0, "images/testo1.png", ofVec2f(1125, 300));
+  OverlayImageElement* textElement1 = new OverlayImageElement(.3,0,.3,0, "images/testo2.png", ofVec2f(1415, 300));
+  OverlayImageElement* textElement2 = new OverlayImageElement(.3,0,.3,0, "images/testo3.png", ofVec2f(1240, 300));
+  OverlayImageElement* textElement3 = new OverlayImageElement(.3,0,.3,0, "images/testo4.png", ofVec2f(1260, 300));
+  OverlayImageElement* textElement4 = new OverlayImageElement(.3,0,.3,0, "images/testo5.png", ofVec2f(1458, 390));
   addElement(textElement);
   addElement(textElement1);
   addElement(textElement2);
@@ -80,9 +85,37 @@ void OverlayHandler::initElements()
   textElement4 = NULL;
   
   
-  OverlayImageElement* imageElement1 = new OverlayImageElement(1,0,1,0, "images/gg.png", ofVec2f(400, 350));
-  addElement(imageElement1);
-  imageElement1 = NULL;
+  
+  OverlayImageElement* textElement5 = new OverlayImageElement(.3,0,.3,0, "images/testo6.png", ofVec2f(702, 900));
+  addElement(textElement5);
+  textElement5 = NULL;
+  
+  
+  OverlayImageElement* imageDate = new OverlayImageElement(.5,0,.5,0, "images/date.png", ofVec2f(0, 0));
+  addElement(imageDate);
+  imageDate = NULL;
+  OverlayImageElement* imageUniversita = new OverlayImageElement(.5,0,.5,0, "images/universita.png", ofVec2f(0, 0));
+  addElement(imageUniversita);
+  imageUniversita = NULL;
+
+  
+  OverlayImageElement* link = new OverlayImageElement(.5,0,.5,0, "images/testo7.png", ofVec2f(0, 0));
+  addElement(link);
+  link = NULL;
+  
+  OverlayImageElement* imageElement2 = new OverlayImageElement(.5,0,.5,0, "images/partners1.png", ofVec2f(0, 0));
+  addElement(imageElement2);
+  imageElement2 = NULL;
+  OverlayImageElement* imageElement3 = new OverlayImageElement(.5,0,.5,0, "images/partners2.png", ofVec2f(0, 0));
+  addElement(imageElement3);
+  imageElement3 = NULL;
+  OverlayImageElement* imageElement4 = new OverlayImageElement(.5,0,.5,0, "images/partners3.png", ofVec2f(0, 0));
+  addElement(imageElement4);
+  imageElement4 = NULL;
+  
+  OverlayImageElement* credits = new OverlayImageElement(1,0,1,0, "images/credits.png", ofVec2f(0, 0));
+  addElement(credits);
+  credits = NULL;
 }
 
 void OverlayHandler::addElement(OverlayElement* element)
