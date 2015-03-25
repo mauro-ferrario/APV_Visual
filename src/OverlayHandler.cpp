@@ -32,7 +32,6 @@ void OverlayHandler::initFont()
   font45.loadFont("MuseoSans_500.otf", 45, true, true);
   font45.setLineHeight(13.0f);
   font45.setLetterSpacing(2);
-//pre  font45.setSpaceSize(<#float size#>)
 }
 
 void OverlayHandler::draw()
@@ -84,12 +83,9 @@ void OverlayHandler::initElements()
   textElement3 = NULL;
   textElement4 = NULL;
   
-  
-  
   OverlayImageElement* textElement5 = new OverlayImageElement(.3,0,.3,0, "images/testo6.png", ofVec2f(702, 900));
   addElement(textElement5);
   textElement5 = NULL;
-  
   
   OverlayImageElement* imageDate = new OverlayImageElement(.5,0,.5,0, "images/date.png", ofVec2f(0, 0));
   addElement(imageDate);
@@ -97,7 +93,6 @@ void OverlayHandler::initElements()
   OverlayImageElement* imageUniversita = new OverlayImageElement(.5,0,.5,0, "images/universita.png", ofVec2f(0, 0));
   addElement(imageUniversita);
   imageUniversita = NULL;
-
   
   OverlayImageElement* link = new OverlayImageElement(.5,0,.5,0, "images/testo7.png", ofVec2f(0, 0));
   addElement(link);
