@@ -126,3 +126,9 @@ bin/data/sounds/LPM_3.wav
 *.plist
 
 *.xcscheme
+
+APV_Visual.xcodeproj/project.pbxproj
+
+*.make
+
+*.pbxproj
