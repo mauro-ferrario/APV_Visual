@@ -140,3 +140,9 @@ APV_Visual.xcodeproj/project.pbxproj
 bin/data/images.zip
 
 *.png
+
+bin/data/images/gg.png
+
+*.png
+
+bin/data/images/gg.png

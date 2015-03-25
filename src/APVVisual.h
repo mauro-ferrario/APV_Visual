@@ -10,7 +10,7 @@
 #define __APV_Visual__APVVisual__
 
 #define     LIMIT_OUTISDE 1000
-//#define     USE_SYPHON
+#define     USE_SYPHON
 
 #include "ofMain.h"
 #include "APVParticleSystem.h"
@@ -74,9 +74,9 @@ public:
   OverlayHandler overlayHandler;
 		ofSoundPlayer		track;
   float             currentTimePause;
+  ofFbo     mainFbo;
   
 private:
-  ofFbo     mainFbo;
   ofVec2f   size;
   void      allocateFBO(int width, int height);
   void      initParticleSystem();

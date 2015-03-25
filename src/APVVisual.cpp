@@ -310,7 +310,7 @@ void APVVisual::update()
     ofSetColor(255);
   else
     ofSetColor(0);
-  ofRect(0,0,size.x, size.y);
+    ofRect(0,0,size.x, size.y);
   ofPopStyle();
   float scale = maxScaleFactor * (1-scaleFactor);
   ofPushMatrix();
