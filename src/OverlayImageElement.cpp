@@ -27,8 +27,11 @@ OverlayImageElement::OverlayImageElement(float introDuration, float introDelay, 
 
 void OverlayImageElement::draw()
 {
-  ofPushStyle();
-  ofSetColor(255,alpha);
-  image.draw(0,0);
-  ofPopStyle();
+  if(image.isAllocated())
+  {
+    ofPushStyle();
+    ofSetColor(255,alpha);
+    image.draw(0,0);
+    ofPopStyle();    
+  }
 }
