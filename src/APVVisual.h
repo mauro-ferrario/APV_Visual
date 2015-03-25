@@ -24,82 +24,77 @@
 class APVVisual
 {
 public:
-            APVVisual();
-  void      setup();
-  void      draw();
-  void      update();
-  void      windowResized(int newWidth, int newHeight);
-  APVParticleSystem particleSystem;
-  GoofyParticle* addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0, bool fromOutside = false);
-  void audioIn(float * input, int bufferSize, int nChannels, float beatValue);
-  void  cleanPointers();
-  void  exit();
+                                      APVVisual();
+  void                                setup();
+  void                                draw();
+  void                                update();
+  void                                windowResized(int newWidth, int newHeight);
+  APVParticleSystem                   particleSystem;
+  GoofyParticle*                      addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0, bool fromOutside = false);
+  void                                audioIn(float * input, int bufferSize, int nChannels, float beatValue);
+  void                                cleanPointers();
+  void                                exit();
   
-  float globalAlphaCoefficent;
-  bool bDrawPoint;
-  bool bDrawLinePointToPoint;
-  bool bDrawTriangle;
-  bool bConnectPointToPrev;
-  bool  bFrameHandler;
-  vector<float>           left;
-  vector<float>           right;
+  float                               globalAlphaCoefficent;
+  bool                                bDrawPoint;
+  bool                                bDrawLinePointToPoint;
+  bool                                bDrawTriangle;
+  bool                                bConnectPointToPrev;
+  bool                                bFrameHandler;
+  vector<float>                       left;
+  vector<float>                       right;
   float triangleCoefficent;
-  tr1::unordered_map<string, bool* > mapToBoolValue;
+  tr1::unordered_map<string, bool* >  mapToBoolValue;
   tr1::unordered_map<string, float* > mapToFloatValue;
   
-  float minDistancePointToPoint;
-  float maxDistancePointToPoint;
-  float distancePointToPointCoefficent;
+  float                               minDistancePointToPoint;
+  float                               maxDistancePointToPoint;
+  float                               distancePointToPointCoefficent;
   
-  float volumeInvertCoefficent;
+  float                               volumeInvertCoefficent;
   
   
-  float minTrianglePerimeter;
-  float maxTrianglePerimeter;
-  float trianglePerimeterCoefficent;
-  float maxRepulsionForce;
-  float scaleFactor;
-  float maxScaleFactor;
-  ofColor triangleColor;
+  float                               minTrianglePerimeter;
+  float                               maxTrianglePerimeter;
+  float                               trianglePerimeterCoefficent;
+  float                               maxRepulsionForce;
+  float                               scaleFactor;
+  float                               maxScaleFactor;
+  ofColor                             triangleColor;
   
-  int totNewPointToDraw = 0;
-  int totPointAlreadyDraw = 0;
-  int totPrevPoint = 0;
-  bool  invertColor;
-  int   invertColorTimer;
-  float volumeCoefficent;
+  int                                 totNewPointToDraw;
+  int                                 totPointAlreadyDraw;
+  int                                 totPrevPoint;
+  bool                                invertColor;
+  int                                 invertColorTimer;
+  float                               volumeCoefficent;
 #ifdef USE_SYPHON
-  ofxSyphonServer individualTextureSyphonServer;
+  ofxSyphonServer                     individualTextureSyphonServer;
 #endif
-  OverlayHandler overlayHandler;
-		ofSoundPlayer		track;
-  float             currentTimePause;
-  ofFbo     mainFbo;
+  OverlayHandler                      overlayHandler;
+		ofSoundPlayer                     track;
+  float                               currentTimePause;
+  ofFbo                               mainFbo;
   
 private:
-  ofVec2f   size;
-  void      allocateFBO(int width, int height);
-  void      initParticleSystem();
-  ofColor   backgroundColor;
-  void      drawBackground();
-  ofxOscReceiver  receiver;
-  void            initOSC();
-  void            receiveMessagges();
+  ofVec2f                             size;
+  void                                allocateFBO(int width, int height);
+  void                                initParticleSystem();
+  ofColor                             backgroundColor;
+  void                                drawBackground();
+  ofxOscReceiver                      receiver;
+  void                                initOSC();
+  void                                receiveMessagges();
   
+  bool                                bSameColorTriangle;
+  bool                                bTimeAlphaTriangle;
   
-  
-  bool    bSameColorTriangle;
-  bool bTimeAlphaTriangle;
-  
-  
-  float                   smoothedVol;
-  float                   scaledVol;
-  int                     bufferCounter;
-  float                   volume;
-  float                   maxVolumeValue;
-  
-  int totPoints;
-  
+  float                               smoothedVol;
+  float                               scaledVol;
+  int                                 bufferCounter;
+  float                               volume;
+  float                               maxVolumeValue;
+  int                                 totPoints;
 };
 
 #endif /* defined(__APV_Visual__APVVisual__) */

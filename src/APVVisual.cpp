@@ -44,12 +44,12 @@ void APVVisual::setup()
   left.assign(256, 0.0);
   right.assign(256, 0.0);
   
-  smoothedVol     = 0.0;
-  scaledVol		= 0.0;
-  bufferCounter	= 0;
-  totPoints = 0;
-  maxVolumeValue = 0;
-  maxRepulsionForce = 100;
+  smoothedVol             = 0.0;
+  scaledVol               = 0.0;
+  bufferCounter           = 0;
+  totPoints               = 0;
+  maxVolumeValue          = 0;
+  maxRepulsionForce       = 100;
   initParticleSystem();
   initOSC();
 
@@ -77,11 +77,11 @@ void APVVisual::setup()
   
   mapToFloatValue["/General/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
   
-  totNewPointToDraw = 0;
-  totPointAlreadyDraw = 0;
-  totPrevPoint = 0;
-  maxScaleFactor = 10;
-  scaleFactor = 1;
+  totNewPointToDraw       = 0;
+  totPointAlreadyDraw     = 0;
+  totPrevPoint            = 0;
+  maxScaleFactor          = 10;
+  scaleFactor             = 1;
   overlayHandler.setup(this);
   ofSleepMillis(1000);
   track.loadSound("sounds/LPM_3.wav");
@@ -153,8 +153,7 @@ void APVVisual::receiveMessagges()
     }
     else if ( messageAddress == "/addPoint" )
     {
-      float pointToDrawNow = m.getArgAsFloat( 0 );
-      //      if(this->totPointAlreadyDraw > 0)
+     float pointToDrawNow = m.getArgAsFloat( 0 );
      if(totPrevPoint > 0 && totPrevPoint >= this->totPointAlreadyDraw)
       {
         int cont = 0;
@@ -172,7 +171,7 @@ void APVVisual::receiveMessagges()
             }
             else
             {
-              this->totPointAlreadyDraw++; // è giusto?
+              this->totPointAlreadyDraw++;
               ofVec3f targetPos;
               targetPos.x = m.getArgAsFloat( 1 + (cont * 2) ) * ofGetWindowWidth();
               targetPos.y = m.getArgAsFloat( (1 + (cont * 2) + 1) ) * ofGetWindowHeight();
@@ -216,50 +215,35 @@ void APVVisual::receiveMessagges()
 
 void APVVisual::audioIn(float * input, int bufferSize, int nChannels, float beatValue)
 {
-  
-    if(beatValue > .95 * volumeInvertCoefficent && !invertColor)
+  if(beatValue > .95 * volumeInvertCoefficent && !invertColor)
+  {
+    invertColor = true;
+    invertColorTimer = 0;
+  }
+  if(invertColor)
+  {
+    invertColorTimer++;
+    if(invertColorTimer > 10)
     {
-      invertColor = true;
-      invertColorTimer = 0;
+      invertColor = false;
     }
-  
-    if(invertColor)
-    {
-      invertColorTimer++;
-      if(invertColorTimer > 10)
-      {
-        invertColor = false;
-      }
-    }
-  
+  }
   float curVol = 0.0;
-  
-  // samples are "interleaved"
   int numCounted = 0;
   
-  //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
-  for (int i = 0; i < bufferSize; i++){
+  for (int i = 0; i < bufferSize; i++)
+  {
     left[i]		= input[ i * 2 ] * 0.5;
     right[i]	= input[ i * 2 +1 ] * 0.5;
-    
     curVol += left[i] * left[i];
     curVol += right[i] * right[i];
     numCounted+=2;
-    
   }
-  
-  //this is how we get the mean of rms :)
   curVol /= (float)numCounted;
-  
-  // this is how we get the root of rms :)
   curVol = sqrt( curVol );
-  
   smoothedVol *= 0.93;
   smoothedVol += 0.07 * curVol;
-  
   volume = smoothedVol;
-  
-  
   if(volume > maxVolumeValue)
   {
     maxVolumeValue = volume;
@@ -268,7 +252,6 @@ void APVVisual::audioIn(float * input, int bufferSize, int nChannels, float beat
   {
     maxVolumeValue -= .001;
   }
-  
   if(volume < .05)
     globalAlphaCoefficent = ofMap(volume, 0, .4, 0, 1);
   else
@@ -320,7 +303,6 @@ void APVVisual::update()
   particleSystem.updateAndDrawWithVisual();
   ofPopMatrix();
   overlayHandler.draw();
-  
   mainFbo.end();
   ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
@@ -373,21 +355,21 @@ void APVVisual::windowResized(int newWidth, int newHeight)
 
 void APVVisual::cleanPointers()
 {
-  mapToFloatValue["/Effect/Scale_Factor"] = NULL;;
-  mapToBoolValue["/Effect/Draw_point"] = NULL;
-  mapToBoolValue["/Effect/Draw_triangle"] = NULL;
-  mapToBoolValue["/Effect/Connect_to_prev_point"] = NULL;
-  mapToBoolValue["/Effect/Connect_points"] = NULL;
-  mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"] = NULL;
-  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = NULL;
-  mapToFloatValue["/Effect/Connect_Lines/Max_Line_Distance"] = NULL;
-  mapToFloatValue["/Effect/Triangles/Min_Perimeter"] = NULL;
-  mapToFloatValue["/Effect/Triangles/Max_Perimeter"] = NULL;
-  mapToFloatValue["/Movement/Same_Spring"] = NULL;
-  mapToFloatValue["/Movement/Same_Friction"] =  NULL;
-  mapToFloatValue["/Movement/Repulsion_Force"] =  NULL;
-  mapToFloatValue["/Movement/Particle_Speed"] =  NULL;
-  mapToFloatValue["/General/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
+  mapToFloatValue["/Effect/Scale_Factor"]                     = NULL;
+  mapToBoolValue["/Effect/Draw_point"]                        = NULL;
+  mapToBoolValue["/Effect/Draw_triangle"]                     = NULL;
+  mapToBoolValue["/Effect/Connect_to_prev_point"]             = NULL;
+  mapToBoolValue["/Effect/Connect_points"]                    = NULL;
+  mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"]    = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"]  = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Max_Line_Distance"]  = NULL;
+  mapToFloatValue["/Effect/Triangles/Min_Perimeter"]          = NULL;
+  mapToFloatValue["/Effect/Triangles/Max_Perimeter"]          = NULL;
+  mapToFloatValue["/Movement/Same_Spring"]                    = NULL;
+  mapToFloatValue["/Movement/Same_Friction"]                  =  NULL;
+  mapToFloatValue["/Movement/Repulsion_Force"]                =  NULL;
+  mapToFloatValue["/Movement/Particle_Speed"]                 =  NULL;
+  mapToFloatValue["/General/Audio_Invert_Coefficent"]         =  NULL;
 }
 
 void APVVisual::exit()
