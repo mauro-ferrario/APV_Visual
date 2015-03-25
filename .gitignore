@@ -132,3 +132,11 @@ APV_Visual.xcodeproj/project.pbxproj
 *.make
 
 *.pbxproj
+
+APV_Visual.xcodeproj/project.pbxproj
+
+*.plist
+
+bin/data/images.zip
+
+*.png
