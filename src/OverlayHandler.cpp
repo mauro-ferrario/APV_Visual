@@ -19,7 +19,7 @@ void OverlayHandler::setup(APVVisual* visual)
   this->visual = visual;
   initFont();
   elements.clear();
-  initElements();
+  //initElements();
 }
 
 void OverlayHandler::initFont()
@@ -62,7 +62,8 @@ void OverlayHandler::startOutro(int element)
 
 void OverlayHandler::startAnimation(int element, OverlayElementType type)
 {
-  elements[element]->startAnimation(type);
+  if(elements[element])
+    elements[element]->startAnimation(type);
 }
 
 void OverlayHandler::initElements()
