@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  ofSetFrameRate(30);
+  ofSetFrameRate(60);
   ofBackground(0);
   ofSetVerticalSync(true);
   visual.setup();
@@ -38,7 +38,11 @@ void ofApp::keyReleased(int key){
   {
     ofPixels pixels;
     visual.mainFbo.readToPixels(pixels);
-    ofSaveImage(pixels, "test.png");
+    ofSaveImage(pixels, ofGetTimestampString()+".png");
+  }
+  if(key == 'g')
+  {
+    visual.particleSystem.goofyFlowField.resetFlow();
   }
 }
 
