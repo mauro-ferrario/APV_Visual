@@ -10,7 +10,7 @@
 #define __APV_Visual__APVVisual__
 
 #define     LIMIT_OUTISDE 1000
-#define     USE_SYPHON
+//#define     USE_SYPHON
 
 #include "ofMain.h"
 #include "APVParticleSystem.h"
@@ -95,6 +95,7 @@ private:
   float                               volume;
   float                               maxVolumeValue;
   int                                 totPoints;
+  ofShader                            shader;
 };
 
 #endif /* defined(__APV_Visual__APVVisual__) */

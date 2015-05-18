@@ -18,6 +18,7 @@ void APVVisual::setup()
 {
   cleanPointers();
   size = ofVec2f(ofGetWindowWidth(), ofGetWindowHeight());
+  cout << size << endl;
   allocateFBO(size.x, size.y);
   backgroundColor = ofColor(0);
   ofSetCircleResolution(60);
@@ -52,6 +53,7 @@ void APVVisual::setup()
   maxRepulsionForce       = 100;
   initParticleSystem();
   initOSC();
+  shader.load("invertedMask.vert", "invertedMask.frag");
 
 #ifdef USE_SYPHON
   individualTextureSyphonServer.setName("APV_Visual");
@@ -74,8 +76,7 @@ void APVVisual::setup()
   mapToFloatValue["/Movement/Same_Friction"] =  &particleSystem.sameFriction;;
   mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem.repulsionForce;;
   mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem.sameLimitVelocity;
-  
-  mapToFloatValue["/General/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
+  mapToFloatValue["/Movement/FollowFlow"] =  &volumeInvertCoefficent;
   
   totNewPointToDraw       = 0;
   totPointAlreadyDraw     = 0;
@@ -87,6 +88,11 @@ void APVVisual::setup()
   track.loadSound("sounds/LPM_3.wav");
   track.setLoop(false);
   
+  particleSystem.moveNoise = true;
+  particleSystem.initGoofyNoise();
+ // particleSystem.goofyPerlinNoiseForce = 2;
+
+  particleSystem.initGoofyFlowField();
 }
 
 void APVVisual::initOSC()
@@ -101,7 +107,7 @@ void APVVisual::receiveMessagges()
     ofxOscMessage m;
     receiver.getNextMessage( &m );
     string messageAddress = m.getAddress();
-    //cout << messageAddress << endl;
+//    cout << messageAddress << endl;
     if ( messageAddress == "/Play" )
     {
       if(m.getArgAsInt32(0) == 0)
@@ -113,10 +119,48 @@ void APVVisual::receiveMessagges()
         track.setPaused(false);
       }
     }
+    
+    
+    cout << messageAddress << endl;
+    
+    if(messageAddress == "/Movement/Perlin/ResX")
+    {
+      particleSystem.goofyPerlinNoise.resY = m.getArgAsFloat(0);
+    }
+    if(messageAddress == "/Movement/Perlin/ResY")
+    {
+      particleSystem.goofyPerlinNoise.resY = m.getArgAsFloat(0);
+    }
+    if(messageAddress == "/Movement/Perlin/Speed")
+    {
+      particleSystem.goofyPerlinNoise.speed = m.getArgAsFloat(0);
+    }
+    if(messageAddress == "/Movement/Perlin/Force")
+    {
+      particleSystem.goofyPerlinNoiseForce = m.getArgAsFloat(0);
+    }
+    
+    
+    if(messageAddress == "/Flow/force")
+    {
+      particleSystem.goofyFlowField.force = m.getArgAsFloat(0);
+    }
+    if(messageAddress == "/FollowFlow")
+    {
+      particleSystem.followFlow = m.getArgAsInt32(0);
+    }
+    if(messageAddress == "/enablePerlin")
+    {
+      particleSystem.moveNoise = m.getArgAsInt32(0);
+    }
     if ( messageAddress == "/Reset_Track" )
     {
       track.stop();
       track.play();
+    }
+    if ( messageAddress == "/resetFlow" )
+    {
+      particleSystem.goofyFlowField.resetFlow();
     }
     if ( messageAddress == "/addSinglePoint" )
     {
@@ -215,7 +259,7 @@ void APVVisual::receiveMessagges()
 
 void APVVisual::audioIn(float * input, int bufferSize, int nChannels, float beatValue)
 {
-  if(beatValue > .95 * volumeInvertCoefficent && !invertColor)
+  if(beatValue > .45 * volumeInvertCoefficent && !invertColor)
   {
     invertColor = true;
     invertColorTimer = 0;
@@ -293,7 +337,7 @@ void APVVisual::update()
     ofSetColor(255);
   else
     ofSetColor(0);
-    ofRect(0,0,size.x, size.y);
+  ofRect(0,0,size.x, size.y);
   ofPopStyle();
   float scale = maxScaleFactor * (1-scaleFactor);
   ofPushMatrix();
@@ -320,13 +364,19 @@ void APVVisual::draw()
 #ifndef USE_SYPHON
   ofPushStyle();
   ofSetColor(255);
-  mainFbo.draw(0,0);
+  shader.begin();
+  mainFbo.draw(0,0, ofGetWindowWidth(), ofGetWindowHeight());
+  shader.end();
   ofPopStyle();
 #endif
 #ifdef USE_SYPHON
   individualTextureSyphonServer.publishTexture(&mainFbo.getTextureReference());
   ofDrawBitmapString("Syphon active", ofPoint(10,60));
 #endif
+  ofPushStyle();
+  ofEnableAlphaBlending();
+//  particleSystem.goofyFlowField.draw();
+  ofPopStyle();
 }
 
 GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life, bool fromOutside)
