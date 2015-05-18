@@ -32,6 +32,18 @@ APVParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVeloci
   return particle;
 }
 
+void APVParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
+{
+  if(particle->position.x < 0 )
+    particle->position.x = ofGetWindowWidth() - 50;
+  else if(particle->position.x > ofGetWindowWidth() )
+    particle->position.x = 50;
+  if(particle->position.y < 0 )
+    particle->position.y = ofGetWindowHeight() - 50;
+  else if(particle->position.y > ofGetWindowHeight() )
+    particle->position.y = 50;
+}
+
 void APVParticleSystem::updateAndDrawWithVisual()
 {
   ofEnableAlphaBlending();
@@ -48,7 +60,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
     if(bFollowTarget)
       (*vItr)->followTarget();
     if(moveNoise)
-      (*vItr)->moveWithNoise(goofyPerlinNoise, goofyPerlinNoiseForce);;
+      (*vItr)->moveWithNoise(goofyPerlinNoise, goofyPerlinNoiseForce * 20);;
     if(followFlow)
       (*vItr)->follow(goofyFlowField);
     applyRepulsions((*vItr));

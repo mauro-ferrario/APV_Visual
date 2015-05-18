@@ -13,6 +13,7 @@
 #include "APVParticle.h"
 
 
+
 class APVVisual;
 
 class APVParticleSystem: public GoofyParticleSystem
@@ -28,6 +29,7 @@ public:
   float               sameFriction;
   float               repulsionForce;
   float               sameLimitVelocity;
+  void                lastActionInsideUpdateLoop(GoofyParticle* particle);
 private:
   
   void                drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn);
