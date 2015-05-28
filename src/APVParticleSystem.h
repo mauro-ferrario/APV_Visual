@@ -30,13 +30,25 @@ public:
   float               repulsionForce;
   float               sameLimitVelocity;
   void                lastActionInsideUpdateLoop(GoofyParticle* particle);
+  ofFbo               triangleFBO;
+  ofFbo               pointFBO;
+  ofFbo               connectPrevPointFBO;
+  ofFbo               connectPointsFBO;
+  ofFbo               fakeFbo;
+  bool                useDifferentFBO;
+  
 private:
   
-  void                drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn);
-  void                connectPrevPoint(vector<GoofyParticle*>::iterator vItr);
-  void                drawTriangle(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint);
-  float               getTrianglePerimeter(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint);
+  void                drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn, int cont, int cont2);
+  void                connectPrevPoint(vector<GoofyParticle*>::iterator vItr, int cont);
+  void                drawTriangle(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint, int cont1, int cont2, int cont3);
   void                loopIn(vector<GoofyParticle*>::iterator vItr, int cont);
+  
+  void                cleanFbos();
+  void                initFBOs(ofVec2f size);
+  void                cleanSingleFbo(ofFbo fbo);
+  void                initSingleFBO(ofFbo& fbo, ofVec2f size);
+  void                drawMeshIntoFbo(ofVboMesh& mesh, ofFbo& fbo, ofPrimitiveMode mode, vector<ofIndexType> indices, vector<ofFloatColor> colors);
 };
 
 #endif /* defined(__APV_Visual__APVParticleSystem__) */
