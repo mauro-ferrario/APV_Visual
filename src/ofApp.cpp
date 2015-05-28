@@ -7,7 +7,21 @@ void ofApp::setup(){
   ofSetVerticalSync(true);
   visual.setup();
   int bufferSize = 256;
+  //------------------------
+  // try to close FMOD:
+  ofFmodSoundPlayer::closeFmod();
+  //------------------------
+  
+  //------------------------
+  // try to close rtAudio:
+  
+  //ofSoundStreamStop();
+  
+  ofSoundStreamClose();
+  
   ofSoundStreamSetup(0, 1, this, 44100, beat.getBufferSize(), 4);
+  ofSetWindowPosition(2500, 0);
+  ofToggleFullscreen();
 }
 
 //--------------------------------------------------------------
@@ -89,5 +103,17 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
+  //------------------------
+  // try to close FMOD:
+  ofFmodSoundPlayer::closeFmod();
+  //------------------------
+  
+  //------------------------
+  // try to close rtAudio:
+  
+  //ofSoundStreamStop();
+  
+  ofSoundStreamClose();
+
   visual.exit();
 }
