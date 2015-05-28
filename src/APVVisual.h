@@ -25,7 +25,7 @@ class APVVisual
 {
 public:
                                       APVVisual();
-  void                                setup();
+  void                                setup(ofVec2f size);
   void                                draw();
   void                                update();
   void                                windowResized(int newWidth, int newHeight);
@@ -52,6 +52,9 @@ public:
   float                               distancePointToPointCoefficent;
   
   float                               volumeInvertCoefficent;
+  float                               volumeLevel;
+  bool                                manualInvertColor;
+  bool                                forceInvertColor;
   
   
   float                               minTrianglePerimeter;
@@ -75,19 +78,24 @@ public:
 		ofSoundPlayer                     track;
   float                               currentTimePause;
   ofFbo                               mainFbo;
+  ofVec2f                             size;
+  void                                setupParticleSystem();
+  void                                initParticleSystem();
+  bool                                bSameColorTriangle;
+  
+  
+  ofFbo pointFBO;
   
 private:
-  ofVec2f                             size;
   void                                allocateFBO(int width, int height);
-  void                                initParticleSystem();
   ofColor                             backgroundColor;
   void                                drawBackground();
   ofxOscReceiver                      receiver;
   void                                initOSC();
   void                                receiveMessagges();
   
-  bool                                bSameColorTriangle;
-  bool                                bTimeAlphaTriangle;
+//  bool                                bTimeAlphaTriangle;
+
   
   float                               smoothedVol;
   float                               scaledVol;
@@ -96,6 +104,8 @@ private:
   float                               maxVolumeValue;
   int                                 totPoints;
   ofShader                            shader;
+  
+  
 };
 
 #endif /* defined(__APV_Visual__APVVisual__) */
