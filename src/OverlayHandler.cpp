@@ -19,7 +19,7 @@ void OverlayHandler::setup(APVVisual* visual)
   this->visual = visual;
   initFont();
   elements.clear();
-  //initElements();
+  initElements();
 }
 
 void OverlayHandler::initFont()
