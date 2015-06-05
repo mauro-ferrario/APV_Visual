@@ -16,6 +16,8 @@ APVVisual::APVVisual()
 
 void APVVisual::setup(ofVec2f size)
 {
+  initParticleSystem();
+//  particleSystem = new APVParticleSystem();    
   cleanPointers();
   this->size = size;
   allocateFBO(size.x, size.y);
@@ -40,8 +42,8 @@ void APVVisual::setup(ofVec2f size)
   invertColorTimer        = 0;
   volumeInvertCoefficent  = 1.5;
   
-  left.assign(256, 0.0);
-  right.assign(256, 0.0);
+  left.assign(1024, 0.0);
+  right.assign(1024, 0.0);
   
   smoothedVol             = 0.0;
   scaledVol               = 0.0;
@@ -50,27 +52,51 @@ void APVVisual::setup(ofVec2f size)
   maxVolumeValue          = 0;
   maxRepulsionForce       = 100;
   volumeLevel             = 1;
-  initParticleSystem();
+//  initParticleSystem();
   initOSC();
 //  shader.load("invertedMask.vert", "invertedMask.frag");
 
 #ifdef USE_SYPHON
   individualTextureSyphonServer.setName("APV_Visual");
 #endif
+  setupOSCPointers();
   
+  totNewPointToDraw       = 0;
+  totPointAlreadyDraw     = 0;
+  totPrevPoint            = 0;
+  maxScaleFactor          = 10;
+  scaleFactor             = 1;
+//  overlayHandler.setup(this);
+  ofSleepMillis(1000);
+//  track.loadSound("sounds/LPM_3.wav");
+  track.setLoop(false);
+  manualInvertColor = true;
+  forceInvertColor = true;
+  
+  particleSystem->moveNoise = true;
+  particleSystem->initGoofyNoise();
+ // particleSystem.goofyPerlinNoiseForce = 2;
+
+  particleSystem->initGoofyFlowField();  
+}
+
+void APVVisual::setupOSCPointers()
+{
+  setupMainOscPointers();
+}
+
+void APVVisual::setupMainOscPointers()
+{
   mapToFloatValue["/Effect/Scale_Factor"] = &scaleFactor;
   mapToBoolValue["/Effect/Draw_point"] = &bDrawPoint;
   mapToBoolValue["/Effect/Draw_triangle"] = &bDrawTriangle;
   mapToBoolValue["/Effect/Connect_to_prev_point"] = &bConnectPointToPrev;
   mapToBoolValue["/Effect/Connect_points"] = &bDrawLinePointToPoint;
   mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"] = &bSameColorTriangle;
-  mapToBoolValue["/Movement/Wind/ApplyWind"] = &particleSystem.applyWind;
+  mapToBoolValue["/Movement/Wind/ApplyWind"] = &particleSystem->applyWind;
   mapToBoolValue["/General/Volume/Manual_Invert"] = &manualInvertColor;
   mapToBoolValue["/General/Volume/Force_Invert"] = &forceInvertColor;
-  mapToBoolValue["/Movement/Follow_Flow"] =  &particleSystem.followFlow;
-  
-  
-  
+  mapToBoolValue["/Movement/Follow_Flow"] =  &particleSystem->followFlow;
   
   mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = &minDistancePointToPoint;
   mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = &minDistancePointToPoint;
@@ -79,36 +105,15 @@ void APVVisual::setup(ofVec2f size)
   mapToFloatValue["/Effect/Triangles/Min_Perimeter"] = &minTrianglePerimeter;
   mapToFloatValue["/Effect/Triangles/Max_Perimeter"] = &maxTrianglePerimeter;
   
-  mapToFloatValue["/Movement/Same_Spring"] = &particleSystem.sameSpring;
-  mapToFloatValue["/Movement/Same_Friction"] =  &particleSystem.sameFriction;;
-  mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem.repulsionForce;;
-  mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem.sameLimitVelocity;
+  mapToFloatValue["/Movement/Same_Spring"] = &particleSystem->sameSpring;
+  mapToFloatValue["/Movement/Same_Friction"] =  &particleSystem->sameFriction;;
+  mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem->repulsionForce;;
+  mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem->sameLimitVelocity;
   mapToFloatValue["/Effect/Triangles/Triangle_Limit"] =  &triangleCoefficent;
   
   
   mapToFloatValue["/General/Volume/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
   mapToFloatValue["/General/Volume/Volume_Level"] =  &volumeLevel;
-  
-  totNewPointToDraw       = 0;
-  totPointAlreadyDraw     = 0;
-  totPrevPoint            = 0;
-  maxScaleFactor          = 10;
-  scaleFactor             = 1;
-  overlayHandler.setup(this);
-  ofSleepMillis(1000);
-//  track.loadSound("sounds/LPM_3.wav");
-  track.setLoop(false);
-  manualInvertColor = true;
-  forceInvertColor = true;
-  
-  particleSystem.moveNoise = true;
-  particleSystem.initGoofyNoise();
- // particleSystem.goofyPerlinNoiseForce = 2;
-
-  particleSystem.initGoofyFlowField();
-  
-  
-  
 }
 
 void APVVisual::initOSC()
@@ -139,30 +144,29 @@ void APVVisual::receiveMessagges()
     
     if(messageAddress == "/Movement/Wind")
     {
-      particleSystem.wind.x = m.getArgAsFloat(0);
-      particleSystem.wind.y = m.getArgAsFloat(1);
+      particleSystem->wind.x = m.getArgAsFloat(0);
+      particleSystem->wind.y = m.getArgAsFloat(1);
     }
     if(messageAddress == "/Movement/Perlin/ResX")
     {
-      particleSystem.goofyPerlinNoise.resY = m.getArgAsFloat(0);
+      particleSystem->goofyPerlinNoise.resY = m.getArgAsFloat(0);
     }
     if(messageAddress == "/Movement/Perlin/ResY")
     {
-      particleSystem.goofyPerlinNoise.resY = m.getArgAsFloat(0);
+      particleSystem->goofyPerlinNoise.resY = m.getArgAsFloat(0);
     }
     if(messageAddress == "/Movement/Perlin/Speed")
     {
-      particleSystem.goofyPerlinNoise.speed = m.getArgAsFloat(0);
+      particleSystem->goofyPerlinNoise.speed = m.getArgAsFloat(0);
     }
     if(messageAddress == "/Movement/Perlin/Force")
     {
-      particleSystem.goofyPerlinNoiseForce = m.getArgAsFloat(0);
+      particleSystem->goofyPerlinNoiseForce = m.getArgAsFloat(0);
     }
-    
     
     if(messageAddress == "/Flow/force")
     {
-      particleSystem.goofyFlowField.force = m.getArgAsFloat(0);
+      particleSystem->goofyFlowField.force = m.getArgAsFloat(0);
     }
     /*
     if(messageAddress == "/FollowFlow")
@@ -172,7 +176,7 @@ void APVVisual::receiveMessagges()
     */
     if(messageAddress == "/enablePerlin")
     {
-      particleSystem.moveNoise = m.getArgAsInt32(0);
+      particleSystem->moveNoise = m.getArgAsInt32(0);
     }
     if ( messageAddress == "/Reset_Track" )
     {
@@ -181,16 +185,15 @@ void APVVisual::receiveMessagges()
     }
     if ( messageAddress == "/resetFlow" )
     {
-      particleSystem.goofyFlowField.resetFlow();
+      particleSystem->goofyFlowField.resetFlow();
     }
     if ( messageAddress == "/addSinglePoint" )
     {
-      ofVec3f position = ofVec3f(m.getArgAsFloat( 0 ) * size.x, m.getArgAsFloat( 1 ) * size.y);
-      addParticle(position, particleSystem.sameLimitVelocity);
+      addSinglePointFromOSC(m);
     }
     else if ( messageAddress == "/clear" )
     {
-      particleSystem.removePoints(false);
+      particleSystem->removePoints(false);
     }
     else if ( messageAddress == "/Effect/Triangles/Color" )
     {
@@ -204,59 +207,21 @@ void APVVisual::receiveMessagges()
     {
       totNewPointToDraw = m.getArgAsInt32( 0 );
       totPointAlreadyDraw = 0;
-      this->totPrevPoint = particleSystem.particles.size();
+      this->totPrevPoint = particleSystem->particles.size();
       if(this->totPrevPoint > totNewPointToDraw)
       {
         int totToRemove = this->totPrevPoint-totNewPointToDraw; 
           for(int z = 0; z < totToRemove; z++)
           {
-            particleSystem.particles[this->totPrevPoint - 1 - z]->target.x = NULL;
-            particleSystem.particles[this->totPrevPoint - 1 - z]->lifeActive = true;
-            particleSystem.particles[this->totPrevPoint - 1 - z]->life = 10;
+            particleSystem->particles[this->totPrevPoint - 1 - z]->target.x = NULL;
+            particleSystem->particles[this->totPrevPoint - 1 - z]->lifeActive = true;
+            particleSystem->particles[this->totPrevPoint - 1 - z]->life = 10;
           }
       }
     }
     else if ( messageAddress == "/addPoint" )
     {
-     float pointToDrawNow = m.getArgAsFloat( 0 );
-     if(totPrevPoint > 0 && totPrevPoint >= this->totPointAlreadyDraw)
-      {
-        int cont = 0;
-        for(int a = totPointAlreadyDraw; a < this->totNewPointToDraw; a++)
-        {
-          if(cont <= pointToDrawNow)
-          {
-            if(a < this->totPrevPoint)
-            {
-              ofPoint tempPoint;
-              tempPoint.x = m.getArgAsFloat( 1 + (cont * 2)) * size.x;
-              tempPoint.y = m.getArgAsFloat( (1 + (cont * 2) + 1)) * size.y;
-              particleSystem.particles[a]->setTarget(tempPoint);
-              this->totPointAlreadyDraw++;
-            }
-            else
-            {
-              this->totPointAlreadyDraw++;
-              ofVec3f targetPos;
-              targetPos.x = m.getArgAsFloat( 1 + (cont * 2) ) * size.x;
-              targetPos.y = m.getArgAsFloat( (1 + (cont * 2) + 1) ) * size.y;
-              addParticle(targetPos, particleSystem.sameLimitVelocity, 0, true);
-            }
-            cont++;
-          }
-        }
-      }
-      else
-      {
-        for(int a = 0; a < pointToDrawNow; a++)
-        {
-          this->totPointAlreadyDraw++;
-          ofVec3f targetPos = ofVec3f(0);
-          targetPos.x = m.getArgAsFloat( 1 + (a * 2)) * size.x;
-          targetPos.y = m.getArgAsFloat( 1 + (a * 2) + 1) * size.y;
-          addParticle(targetPos, particleSystem.sameLimitVelocity, 0, true);
-        }
-      }
+      addPointFromOSC(m);
     }
     else if(messageAddress == "/FadeIn")
     {
@@ -274,6 +239,55 @@ void APVVisual::receiveMessagges()
     if(mapToFloatValue[messageAddress])
     {
       *mapToFloatValue[messageAddress] = m.getArgAsFloat(0);
+    }
+  }
+}
+
+void APVVisual::addSinglePointFromOSC(ofxOscMessage& m)
+{
+  ofVec3f position = ofVec3f(m.getArgAsFloat( 0 ) * size.x, m.getArgAsFloat( 1 ) * size.y);
+  addParticle(position, particleSystem->sameLimitVelocity);
+}
+
+void APVVisual::addPointFromOSC(ofxOscMessage& m)
+{
+  float pointToDrawNow = m.getArgAsFloat( 0 );
+  if(totPrevPoint > 0 && totPrevPoint >= this->totPointAlreadyDraw)
+  {
+    int cont = 0;
+    for(int a = totPointAlreadyDraw; a < this->totNewPointToDraw; a++)
+    {
+      if(cont <= pointToDrawNow)
+      {
+        if(a < this->totPrevPoint)
+        {
+          ofPoint tempPoint;
+          tempPoint.x = m.getArgAsFloat( 1 + (cont * 2)) * size.x;
+          tempPoint.y = m.getArgAsFloat( (1 + (cont * 2) + 1)) * size.y;
+          particleSystem->particles[a]->setTarget(tempPoint);
+          this->totPointAlreadyDraw++;
+        }
+        else
+        {
+          this->totPointAlreadyDraw++;
+          ofVec3f targetPos;
+          targetPos.x = m.getArgAsFloat( 1 + (cont * 2) ) * size.x;
+          targetPos.y = m.getArgAsFloat( (1 + (cont * 2) + 1) ) * size.y;
+          addParticle(targetPos, particleSystem->sameLimitVelocity, 0, true);
+        }
+        cont++;
+      }
+    }
+  }
+  else
+  {
+    for(int a = 0; a < pointToDrawNow; a++)
+    {
+      this->totPointAlreadyDraw++;
+      ofVec3f targetPos = ofVec3f(0);
+      targetPos.x = m.getArgAsFloat( 1 + (a * 2)) * size.x;
+      targetPos.y = m.getArgAsFloat( 1 + (a * 2) + 1) * size.y;
+      addParticle(targetPos, particleSystem->sameLimitVelocity, 0, true);
     }
   }
 }
@@ -298,14 +312,19 @@ void APVVisual::audioIn(float * input, int bufferSize, int nChannels, float beat
   float curVol = 0.0;
   int numCounted = 0;
   
-  for (int i = 0; i < bufferSize; i++)
-  {
-    left[i]		= input[ i * 2 ] * 0.5 * volumeLevel;
-    right[i]	= input[ i * 2 +1 ] * 0.5 * volumeLevel;
-    curVol += left[i] * left[i];
-    curVol += right[i] * right[i];
-    numCounted+=2;
-  }
+//  bufferSize = 512; // Perchè se lo tolgo non va?
+
+    for (int i = 0; i < bufferSize; i++)
+    {
+      //    cout << "bufferSize = " << bufferSize << endl;
+      //    cout << "LEFT SIZE = " << left.size() << endl;
+      left[i]		= input[ i * 2 ] * 0.5 * volumeLevel;
+      right[i]	= input[ i * 2 +1 ] * 0.5 * volumeLevel;
+      curVol += left[i] * left[i];
+      curVol += right[i] * right[i];
+      numCounted+=2;
+    }
+  
   curVol /= (float)numCounted;
   curVol = sqrt( curVol );
   smoothedVol *= 0.93;
@@ -329,13 +348,16 @@ void APVVisual::audioIn(float * input, int bufferSize, int nChannels, float beat
 
 void APVVisual::initParticleSystem()
 {
-  //particleSystem = *new APVParticleSystem();
+  delete particleSystem;
+  particleSystem = NULL;
+  particleSystem = new APVParticleSystem();
 }
 
 void APVVisual::setupParticleSystem()
 {
 //  particleSystem.init();f
-  particleSystem.setup(this);
+  cout << "SETUP PARTICLE SYSTEM" << endl;
+  particleSystem->setup(this);
 }
 
 void APVVisual::allocateFBO(int width, int height)
@@ -363,7 +385,7 @@ void APVVisual::update()
 //  if(particleSystem.useDifferentFBO)
   if(true)
   {
-    particleSystem.updateAndDrawWithVisual();
+    particleSystem->updateAndDrawWithVisual();
   }
   else
   {
@@ -379,7 +401,7 @@ void APVVisual::update()
     ofPopStyle();
     float scale = maxScaleFactor * (1-scaleFactor);
     ofPushMatrix();;
-    particleSystem.updateAndDrawWithVisual();
+    particleSystem->updateAndDrawWithVisual();
     ofPopMatrix();
 //    overlayHandler.draw();
     mainFbo.end();
@@ -416,7 +438,7 @@ void APVVisual::draw()
 
 GoofyParticle* APVVisual::addParticle(ofVec3f newPosition, float maxVelocity, long int life, bool fromOutside)
 {
-  APVParticle* tempParticle = particleSystem.addParticle(newPosition, maxVelocity, life);
+  APVParticle* tempParticle = particleSystem->addParticle(newPosition, maxVelocity, life);
   if(fromOutside)
   {
     ofVec2f newPoint;
@@ -440,29 +462,38 @@ void APVVisual::windowResized(int newWidth, int newHeight)
 
 void APVVisual::cleanPointers()
 {
-//  particleSystem = NULL;
-  mapToFloatValue["/Effect/Scale_Factor"]                     = NULL;
-  mapToBoolValue["/Effect/Draw_point"]                        = NULL;
-  mapToBoolValue["/Effect/Draw_triangle"]                     = NULL;
-  mapToBoolValue["/Effect/Connect_to_prev_point"]             = NULL;
-  mapToBoolValue["/Effect/Connect_points"]                    = NULL;
-  mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"]    = NULL;
-  mapToBoolValue["/Movement/Wind/ApplyWind"]                  = NULL;
-  mapToBoolValue["/General/Volume/Manual_Invert"]             = NULL;
-  mapToBoolValue["/General/Volume/Force_Invert"]              = NULL;
-  mapToBoolValue["/Movement/Follow_Flow"]                     = NULL;
+  cleanMainOSCPointers();
+}
+
+void APVVisual::cleanMainOSCPointers()
+{
+  mapToFloatValue["/Effect/Scale_Factor"] = NULL;
+  mapToBoolValue["/Effect/Draw_point"] = NULL;
+  mapToBoolValue["/Effect/Draw_triangle"] = NULL;
+  mapToBoolValue["/Effect/Connect_to_prev_point"] = NULL;
+  mapToBoolValue["/Effect/Connect_points"] = NULL;
+  mapToBoolValue["/Effect/Triangles/Same_Color_Triangles"] = NULL;
+  mapToBoolValue["/Movement/Wind/ApplyWind"] = NULL;
+  mapToBoolValue["/General/Volume/Manual_Invert"] = NULL;
+  mapToBoolValue["/General/Volume/Force_Invert"] = NULL;
+  mapToBoolValue["/Movement/Follow_Flow"] =  NULL;
   
-  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"]  = NULL;
-  mapToFloatValue["/Effect/Connect_Lines/Max_Line_Distance"]  = NULL;
-  mapToFloatValue["/Effect/Triangles/Min_Perimeter"]          = NULL;
-  mapToFloatValue["/Effect/Triangles/Max_Perimeter"]          = NULL;
-  mapToFloatValue["/Movement/Same_Spring"]                    = NULL;
-  mapToFloatValue["/Movement/Same_Friction"]                  = NULL;
-  mapToFloatValue["/Movement/Repulsion_Force"]                = NULL;
-  mapToFloatValue["/Movement/Particle_Speed"]                 = NULL;
-  mapToFloatValue["/Effect/Triangles/Triangle_Limit"]         = NULL;
-  mapToFloatValue["/General/Volume/Audio_Invert_Coefficent"]  = NULL;
-  mapToFloatValue["/General/Volume/Volume_Level"]             = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Min_Line_Distance"] = NULL;
+  mapToFloatValue["/Effect/Connect_Lines/Max_Line_Distance"] = NULL;
+  
+  mapToFloatValue["/Effect/Triangles/Min_Perimeter"] = NULL;
+  mapToFloatValue["/Effect/Triangles/Max_Perimeter"] = NULL;
+  
+  mapToFloatValue["/Movement/Same_Spring"] = NULL;
+  mapToFloatValue["/Movement/Same_Friction"] =  NULL;
+  mapToFloatValue["/Movement/Repulsion_Force"] =  NULL;
+  mapToFloatValue["/Movement/Particle_Speed"] =  NULL;
+  mapToFloatValue["/Effect/Triangles/Triangle_Limit"] =  NULL;
+  
+  
+  mapToFloatValue["/General/Volume/Audio_Invert_Coefficent"] =  NULL;
+  mapToFloatValue["/General/Volume/Volume_Level"] = NULL;
 }
 
 void APVVisual::exit()

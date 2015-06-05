@@ -29,10 +29,9 @@ public:
   void                                draw();
   void                                update();
   void                                windowResized(int newWidth, int newHeight);
-  APVParticleSystem                   particleSystem;
+  APVParticleSystem*                  particleSystem;
   GoofyParticle*                      addParticle(ofVec3f newPosition, float maxVelocity, long int life = 0, bool fromOutside = false);
   void                                audioIn(float * input, int bufferSize, int nChannels, float beatValue);
-  void                                cleanPointers();
   void                                exit();
   
   float                               globalAlphaCoefficent;
@@ -80,19 +79,23 @@ public:
   ofFbo                               mainFbo;
   ofVec2f                             size;
   void                                setupParticleSystem();
-  void                                initParticleSystem();
+  virtual void                        initParticleSystem();
   bool                                bSameColorTriangle;
   
   
   ofFbo pointFBO;
   
+protected:
+  ofxOscReceiver                      receiver;
+  virtual void                        setupOSCPointers();
+  virtual void                        cleanPointers();
+  
 private:
   void                                allocateFBO(int width, int height);
   ofColor                             backgroundColor;
   void                                drawBackground();
-  ofxOscReceiver                      receiver;
   void                                initOSC();
-  void                                receiveMessagges();
+  virtual void                                receiveMessagges();
   
 //  bool                                bTimeAlphaTriangle;
 
@@ -104,6 +107,12 @@ private:
   float                               maxVolumeValue;
   int                                 totPoints;
   ofShader                            shader;
+  
+  virtual void                        addPointFromOSC(ofxOscMessage& m);
+  virtual void                        addSinglePointFromOSC(ofxOscMessage& m);
+  
+  void                                setupMainOscPointers();
+  void                                cleanMainOSCPointers();
   
   
 };
