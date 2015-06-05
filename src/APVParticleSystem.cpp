@@ -10,24 +10,6 @@
 #include "APVVisual.h"
 
 
-
-ofVboMesh mesh;
-ofVboMesh triangleMesh;
-ofVboMesh connectPointMesh;
-
-
-vector<ofIndexType> pointIndices;
-vector<ofFloatColor> pointIndicesColor;
-
-vector<ofIndexType> connectPointIndices;
-vector<ofFloatColor> connectPointIndicesColors;
-
-vector<ofIndexType> triangleIndices;
-vector<ofFloatColor> triangleIndicesColors;
-
-vector<ofIndexType> connectPrevPointIndices;
-vector<ofFloatColor> connectPrevPointColors;
-
 APVParticleSystem::APVParticleSystem()
 {
   
@@ -36,6 +18,7 @@ APVParticleSystem::APVParticleSystem()
 void APVParticleSystem::setup(APVVisual* _visual)
 {
   this->visual = _visual;
+  cout << this->visual  << endl;
   _visual = NULL;
   sameFriction = .83;
   sameSpring = .183;
@@ -52,7 +35,6 @@ void APVParticleSystem::setup(APVVisual* _visual)
 
 void APVParticleSystem::initFBOs(ofVec2f size)
 {
-  cout << "QUI SIZE " << size << endl;
 //  initSingleFBO(fakeFbo, size);
   initSingleFBO(triangleFBO, size);
   initSingleFBO(pointFBO, size);
@@ -121,12 +103,8 @@ void APVParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
   }
 }
 
-void APVParticleSystem::updateAndDrawWithVisual()
+void APVParticleSystem::cleanMesh()
 {
-  
-//  if(useDifferentFBO)
-    cleanFbos();
-  
   pointIndices.clear();
   pointIndicesColor.clear();
   connectPointIndices.clear();
@@ -135,11 +113,14 @@ void APVParticleSystem::updateAndDrawWithVisual()
   triangleIndicesColors.clear();
   connectPrevPointIndices.clear();
   connectPrevPointColors.clear();
-  
   mesh.clear();
-  
+}
+
+void APVParticleSystem::updateAndDrawWithVisual()
+{
+  cleanFbos();
+  cleanMesh();
   ofEnableAlphaBlending();
-  
   if(moveNoise)
     goofyPerlinNoise.update();
   
@@ -158,10 +139,11 @@ void APVParticleSystem::updateAndDrawWithVisual()
     if(followFlow)
       (*vItr)->follow(goofyFlowField);
     if(applyWind)
-      (*vItr)->addForce(wind);
+      (*vItr)->addWind(wind);
     
     applyRepulsions((*vItr));
     applyAttraction((*vItr));
+    
     (*vItr)->update();
     
     if (!(*vItr)->active)
@@ -187,7 +169,6 @@ void APVParticleSystem::updateAndDrawWithVisual()
             float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
             float limitSpeed = false;
             GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
-            
             (*vItr)->applyRepulsion(repeller, false);
             delete repeller;
             repeller = NULL;
@@ -207,23 +188,8 @@ void APVParticleSystem::updateAndDrawWithVisual()
             delete repeller;
             repeller = NULL;
           }
-          if(cont == particles.size() -1)
-          {
-            tempParticle->audioCoefficent = visual->right[250];
-            float radius = visual->size.x*.5;
-            float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
-            float limitSpeed = false;
-            GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
-            
-            (*vItr)->applyRepulsion(repeller, false);
-            delete repeller;
-            repeller = NULL;
-          }
         }
-//        tempParticle = NULL;
-        
         mesh.addVertex((*vItr)->position);
-        
         GoofyParticle* prevPrevParticle;
         if(cont > 0 && visual->bConnectPointToPrev)
             connectPrevPoint(vItr, cont);
@@ -250,7 +216,11 @@ void APVParticleSystem::updateAndDrawWithVisual()
       vItr++;
     }
   }
-  
+  drawMeshesIntoFBOs();
+}
+
+void APVParticleSystem::drawMeshesIntoFBOs()
+{
   if(visual->bDrawTriangle)
     drawMeshIntoFbo(mesh, triangleFBO, OF_PRIMITIVE_TRIANGLES, triangleIndices, triangleIndicesColors);
   if(visual->bDrawPoint)

@@ -49,6 +49,25 @@ private:
   void                cleanSingleFbo(ofFbo fbo);
   void                initSingleFBO(ofFbo& fbo, ofVec2f size);
   void                drawMeshIntoFbo(ofVboMesh& mesh, ofFbo& fbo, ofPrimitiveMode mode, vector<ofIndexType> indices, vector<ofFloatColor> colors);
+  void                  cleanMesh();
+  void                  drawMeshesIntoFBOs();
+  
+  ofVboMesh             mesh;
+  ofVboMesh             triangleMesh;
+  ofVboMesh             connectPointMesh;
+  
+  
+  vector<ofIndexType>   pointIndices;
+  vector<ofFloatColor>  pointIndicesColor;
+  
+  vector<ofIndexType>   connectPointIndices;
+  vector<ofFloatColor>  connectPointIndicesColors;
+  
+  vector<ofIndexType>   triangleIndices;
+  vector<ofFloatColor>  triangleIndicesColors;
+  
+  vector<ofIndexType>   connectPrevPointIndices;
+  vector<ofFloatColor>  connectPrevPointColors;
 };
 
 #endif /* defined(__APV_Visual__APVParticleSystem__) */
