@@ -83,6 +83,17 @@ void APVVisual::setup(ofVec2f size)
 void APVVisual::setupOSCPointers()
 {
   setupMainOscPointers();
+  setupPixelatePointers();
+}
+
+void APVVisual::setupPixelatePointers()
+{
+  mapToBoolValue["/Shaders/Pixel_Shader/Pixel_Effect"] = &enablePixelShader;
+  mapToBoolValue["/Shaders/Pixel_Shader/Half_Pixel_Effect"] = &halfPixelShader;
+  mapToBoolValue["/Shaders/Pixel_Shader/Same_Pixel_Size"] = &samePixelShaderSize;
+//  mapToFloatValue["/Shaders/Pixel_Shader/Pixel_Size_Limit"] = &pixelShaderSizeLimit;
+  mapToFloatValue["/Shaders/Pixel_Shader/Pixel_Width"] = &pixelShaderWidth;
+  mapToFloatValue["/Shaders/Pixel_Shader/Pixel_Height"] = &pixelShaderHeight;
 }
 
 void APVVisual::setupMainOscPointers()
@@ -128,109 +139,10 @@ void APVVisual::receiveMessagges()
     ofxOscMessage m;
     receiver.getNextMessage( &m );
     string messageAddress = m.getAddress();
-    if ( messageAddress == "/Play" )
-    {
-      if(m.getArgAsInt32(0) == 0)
-      {
-        track.setPaused(true);
-      }
-      else
-      {
-        track.setPaused(false);
-      }
-    }
+//    if(messageAddress != "/General/Visual_Framerate")
+      cout << messageAddress << endl;
     
-    cout << messageAddress << endl;
-    
-    if(messageAddress == "/Movement/Wind")
-    {
-      particleSystem->wind.x = m.getArgAsFloat(0);
-      particleSystem->wind.y = m.getArgAsFloat(1);
-    }
-    if(messageAddress == "/Movement/Perlin/ResX")
-    {
-      particleSystem->goofyPerlinNoise.resY = m.getArgAsFloat(0);
-    }
-    if(messageAddress == "/Movement/Perlin/ResY")
-    {
-      particleSystem->goofyPerlinNoise.resY = m.getArgAsFloat(0);
-    }
-    if(messageAddress == "/Movement/Perlin/Speed")
-    {
-      particleSystem->goofyPerlinNoise.speed = m.getArgAsFloat(0);
-    }
-    if(messageAddress == "/Movement/Perlin/Force")
-    {
-      particleSystem->goofyPerlinNoiseForce = m.getArgAsFloat(0);
-    }
-    
-    if(messageAddress == "/Flow/force")
-    {
-      particleSystem->goofyFlowField.force = m.getArgAsFloat(0);
-    }
-    /*
-    if(messageAddress == "/FollowFlow")
-    {
-      particleSystem.followFlow = m.getArgAsInt32(0);
-    }
-    */
-    if(messageAddress == "/enablePerlin")
-    {
-      particleSystem->moveNoise = m.getArgAsInt32(0);
-    }
-    if ( messageAddress == "/Reset_Track" )
-    {
-      track.stop();
-      track.play();
-    }
-    if ( messageAddress == "/resetFlow" )
-    {
-      particleSystem->goofyFlowField.resetFlow();
-    }
-    if ( messageAddress == "/addSinglePoint" )
-    {
-      addSinglePointFromOSC(m);
-    }
-    else if ( messageAddress == "/clear" )
-    {
-      particleSystem->removePoints(false);
-    }
-    else if ( messageAddress == "/Effect/Triangles/Color" )
-    {
-      string color = m.getArgAsString(0);
-      vector<string> colorChannels = ofSplitString(color, ",");
-      triangleColor.r = ofToFloat(colorChannels[0])*255;
-      triangleColor.g = ofToFloat(colorChannels[1])*255;
-      triangleColor.b = ofToFloat(colorChannels[2])*255;
-    }
-    else if (messageAddress == "/loadShape" )
-    {
-      totNewPointToDraw = m.getArgAsInt32( 0 );
-      totPointAlreadyDraw = 0;
-      this->totPrevPoint = particleSystem->particles.size();
-      if(this->totPrevPoint > totNewPointToDraw)
-      {
-        int totToRemove = this->totPrevPoint-totNewPointToDraw; 
-          for(int z = 0; z < totToRemove; z++)
-          {
-            particleSystem->particles[this->totPrevPoint - 1 - z]->target.x = NULL;
-            particleSystem->particles[this->totPrevPoint - 1 - z]->lifeActive = true;
-            particleSystem->particles[this->totPrevPoint - 1 - z]->life = 10;
-          }
-      }
-    }
-    else if ( messageAddress == "/addPoint" )
-    {
-      addPointFromOSC(m);
-    }
-    else if(messageAddress == "/FadeIn")
-    {
-      overlayHandler.startIntro(m.getArgAsInt32(0));
-    }
-    else if(messageAddress == "/FadeOut")
-    {
-      overlayHandler.startOutro(m.getArgAsInt32(0));
-    }
+    processMessage(m, messageAddress);
     
     if(mapToBoolValue[messageAddress])
     {
@@ -240,6 +152,110 @@ void APVVisual::receiveMessagges()
     {
       *mapToFloatValue[messageAddress] = m.getArgAsFloat(0);
     }
+  }
+}
+
+void APVVisual::processMessage(ofxOscMessage& m, string messageAddress)
+{
+  if ( messageAddress == "/Play" )
+  {
+    if(m.getArgAsInt32(0) == 0)
+    {
+      track.setPaused(true);
+    }
+    else
+    {
+      track.setPaused(false);
+    }
+  }
+  if(messageAddress == "/Movement/Wind")
+  {
+    particleSystem->wind.x = m.getArgAsFloat(0);
+    particleSystem->wind.y = m.getArgAsFloat(1);
+  }
+  if(messageAddress == "/Movement/Perlin/ResX")
+  {
+    particleSystem->goofyPerlinNoise.resY = m.getArgAsFloat(0);
+  }
+  if(messageAddress == "/Movement/Perlin/ResY")
+  {
+    particleSystem->goofyPerlinNoise.resY = m.getArgAsFloat(0);
+  }
+  if(messageAddress == "/Movement/Perlin/Speed")
+  {
+    particleSystem->goofyPerlinNoise.speed = m.getArgAsFloat(0);
+  }
+  if(messageAddress == "/Movement/Perlin/Force")
+  {
+    particleSystem->goofyPerlinNoiseForce = m.getArgAsFloat(0);
+  }
+  
+  if(messageAddress == "/Flow/force")
+  {
+    particleSystem->goofyFlowField.force = m.getArgAsFloat(0);
+  }
+  /*
+   if(messageAddress == "/FollowFlow")
+   {
+   particleSystem.followFlow = m.getArgAsInt32(0);
+   }
+   */
+  if(messageAddress == "/enablePerlin")
+  {
+    particleSystem->moveNoise = m.getArgAsInt32(0);
+  }
+  if ( messageAddress == "/Reset_Track" )
+  {
+    track.stop();
+    track.play();
+  }
+  if ( messageAddress == "/resetFlow" )
+  {
+    particleSystem->goofyFlowField.resetFlow();
+  }
+  if ( messageAddress == "/addSinglePoint" )
+  {
+    addSinglePointFromOSC(m);
+  }
+  else if ( messageAddress == "/clear" )
+  {
+    particleSystem->removePoints(false);
+  }
+  else if ( messageAddress == "/Effect/Triangles/Color" )
+  {
+    string color = m.getArgAsString(0);
+    vector<string> colorChannels = ofSplitString(color, ",");
+    triangleColor.r = ofToFloat(colorChannels[0])*255;
+    triangleColor.g = ofToFloat(colorChannels[1])*255;
+    triangleColor.b = ofToFloat(colorChannels[2])*255;
+  }
+  else if (messageAddress == "/loadShape" )
+  {
+    totNewPointToDraw = m.getArgAsInt32( 0 );
+    totPointAlreadyDraw = 0;
+    this->totPrevPoint = particleSystem->particles.size();
+    if(this->totPrevPoint > totNewPointToDraw)
+    {
+      int totToRemove = this->totPrevPoint-totNewPointToDraw;
+      for(int z = 0; z < totToRemove; z++)
+      {
+        particleSystem->particles[this->totPrevPoint - 1 - z]->target.x = NULL;
+        particleSystem->particles[this->totPrevPoint - 1 - z]->lifeActive = true;
+        particleSystem->particles[this->totPrevPoint - 1 - z]->life = 10;
+      }
+    }
+  }
+  else if ( messageAddress == "/addPoint" )
+  {
+    addPointFromOSC(m);
+  }
+  else if(messageAddress == "/FadeIn")
+  {
+    overlayHandler.startIntro(m.getArgAsInt32(0));
+  }
+  else if(messageAddress == "/FadeOut")
+  {
+    overlayHandler.startOutro(m.getArgAsInt32(0));
   }
 }
 
@@ -462,7 +478,12 @@ void APVVisual::windowResized(int newWidth, int newHeight)
 
 void APVVisual::cleanPointers()
 {
-  cleanMainOSCPointers();
+  cout << "CLEAR ALL" << endl;
+  for (auto& x: mapToFloatValue)
+    mapToFloatValue[x.first] = NULL;
+  for (auto& x: mapToBoolValue)
+    mapToBoolValue[x.first] = NULL;
+  //cleanMainOSCPointers();
 }
 
 void APVVisual::cleanMainOSCPointers()
