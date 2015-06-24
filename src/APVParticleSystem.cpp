@@ -275,7 +275,7 @@ void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, int cont)
   int cont2 = cont;
   while ( pPointerIn!= particles.begin() )
   {
-    if(cont > 2 && visual->bDrawTriangle)
+    if(cont < particles.size() - 3 && visual->bDrawTriangle)
       drawTriangle(pPointerIn +1, pPointerIn, vItr,cont2+1, cont2,cont);
     if(visual->bDrawLinePointToPoint)
       drawConnectPoints(vItr, pPointerIn, cont, cont2);
