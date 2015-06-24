@@ -287,7 +287,11 @@ void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, int cont)
 
 void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint, int cont1, int cont2, int cont3)
 {
-  if(!((*firstPoint)&&(*secondPoint)&&(*thirdPoint)))
+  if(!(*firstPoint))
+    return;
+  if(!(*secondPoint))
+    return;
+  if(!(*thirdPoint))
     return;
   // BUG... forse non arriva giusto un puntatore
   float alpha;
