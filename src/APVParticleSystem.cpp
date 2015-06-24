@@ -165,7 +165,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
           if(visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256, true)] > 0)
           {
             tempParticle->audioCoefficent = visual->left[(int)ofMap(cont, 0, halfTotParticles, 0, 256, true)];
-            float radius = visual->size.x*.5;
+            float radius = visual->size.x*2;
             float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
             float limitSpeed = false;
             GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
@@ -179,7 +179,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
           if(visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256, true)] > 0)
           {
             tempParticle->audioCoefficent = visual->right[(int)ofMap(cont, halfTotParticles, totParticles - 1, 0, 256, true)];
-            float radius = visual->size.x*.5;
+            float radius = visual->size.x*2;
             float force = tempParticle->audioCoefficent * visual->maxRepulsionForce * repulsionForce;
             float limitSpeed = false;
             GoofyMagneticPoint *repeller = new GoofyMagneticPoint(center, radius, force, limitSpeed);
