@@ -210,11 +210,11 @@ void APVParticleSystem::updateAndDrawWithVisual()
             pointIndicesColor.push_back(pointColor);            
           }
         }
-        cont++;
       }
       lastActionInsideUpdateLoop((*vItr));
       vItr++;
     }
+    cont++;
   }
   drawMeshesIntoFBOs();
 }
