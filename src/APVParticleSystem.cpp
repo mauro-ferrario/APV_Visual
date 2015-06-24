@@ -273,20 +273,23 @@ void APVParticleSystem::loopIn(vector<GoofyParticle*>::iterator vItr, int cont)
   vector<GoofyParticle*>::iterator pPointerIn = vItr;
   ofPushStyle();
   int cont2 = cont;
-  while ( pPointerIn != particles.end() )
+  while ( pPointerIn!= particles.begin() )
   {
     if(cont > 2 && visual->bDrawTriangle)
-      drawTriangle(vItr, pPointerIn -1, pPointerIn, cont, cont2-1, cont2);
+      drawTriangle(pPointerIn +1, pPointerIn, vItr,cont2+1, cont2,cont);
     if(visual->bDrawLinePointToPoint)
       drawConnectPoints(vItr, pPointerIn, cont, cont2);
-    pPointerIn++;
-    cont2++;
+    pPointerIn--;
+    cont2--;
   }
   ofPopStyle();
 }
 
 void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint, vector<GoofyParticle*>::iterator secondPoint, vector<GoofyParticle*>::iterator thirdPoint, int cont1, int cont2, int cont3)
 {
+  if(!((*firstPoint)&&(*secondPoint)&&(*thirdPoint)))
+    return;
+  // BUG... forse non arriva giusto un puntatore
   float alpha;
   
   float dist1 =  abs(ofDist((*firstPoint)->position.x, (*firstPoint)->position.y, (*thirdPoint)->position.x, (*thirdPoint)->position.y));
@@ -308,11 +311,11 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
   
   if(!visual->bSameColorTriangle)
   {
-    if(perimeter < visual->size.x*.15)
+    if(perimeter < visual->size.x*.15*visual->triangleCoefficent)
       triangleColor = ofColor(255, 0, 0, alpha);
-    else if(perimeter >= visual->size.x*.15 && perimeter < visual->size.x *.25)
+    else if(perimeter >= visual->size.x*.15*visual->triangleCoefficent && perimeter < visual->size.x *.25*visual->triangleCoefficent)
       triangleColor = ofColor(0, 255, 0, alpha);
-    else if(perimeter >= visual->size.x*.25 && perimeter <= visual->size.x*.35)
+    else if(perimeter >= visual->size.x*.25*visual->triangleCoefficent && perimeter <= visual->size.x*.65*visual->triangleCoefficent)
       triangleColor = ofColor(0, 0, 255, alpha);
     else
       triangleColor = ofColor(255, alpha);
@@ -364,7 +367,7 @@ void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr, 
 void APVParticleSystem::drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn, int cont, int cont2)
 {
   APVParticle* tempParticle = (APVParticle*)(*vItr);
-  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 150;
   tempParticle = NULL;
   float distance = (*vItr)->position.distance((*pPointerIn)->position);
   ofColor lineColor = ofColor(255,alpha);

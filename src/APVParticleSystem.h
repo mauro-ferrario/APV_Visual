@@ -22,7 +22,7 @@ public:
                       APVParticleSystem();
   void                setup(APVVisual* visual);
   APVParticle*        addParticle(ofVec3f newPosition, float maxVelocity, long int life);
-  void                updateAndDrawWithVisual();
+  virtual void        updateAndDrawWithVisual();
   void                removePoints(bool removeNow);
   APVVisual*          visual;
   float               sameSpring;

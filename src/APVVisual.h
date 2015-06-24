@@ -85,9 +85,20 @@ public:
   
   ofFbo pointFBO;
   
+  
+  bool                                enablePixelShader;
+  bool                                halfPixelShader;
+  bool                                samePixelShaderSize;
+  bool                                pixelShaderAllLine;
+//  float                               pixelShaderSizeLimit;
+  float                               pixelShaderWidth;
+  float                               pixelShaderHeight;
+  
 protected:
+  virtual void                        processMessage(ofxOscMessage& m, string messageAddress);
   ofxOscReceiver                      receiver;
   virtual void                        setupOSCPointers();
+  virtual void                        setupPixelatePointers();
   virtual void                        cleanPointers();
   
 private:
