@@ -28,6 +28,7 @@ public:
   float               sameSpring;
   float               sameFriction;
   float               repulsionForce;
+  float               lineAlpha;
   float               sameLimitVelocity;
   void                lastActionInsideUpdateLoop(GoofyParticle* particle);
   ofFbo               triangleFBO;

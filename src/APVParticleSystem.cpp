@@ -30,6 +30,7 @@ void APVParticleSystem::setup(APVVisual* _visual)
 //  if(useDifferentFBO)
     initFBOs(visual->size);
   mesh.setMode(OF_PRIMITIVE_POINTS);
+  lineAlpha = 255;
   glPointSize(3);
 }
 
@@ -201,7 +202,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
         {
           if(tempParticle)
           {
-            float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 1000;
+            float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 2000;
             tempParticle = NULL;
             ofColor pointColor;
             pointColor = ofColor(255);
@@ -244,6 +245,7 @@ void APVParticleSystem::drawMeshIntoFbo(ofVboMesh& mesh, ofFbo& fbo, ofPrimitive
   ofPushMatrix();
   ofTranslate(visual->size.x*.5, visual->size.y*.5);
   ofScale(scale,scale);
+//  ofRotate(ofGetFrameNum()*.04);
   ofTranslate(-visual->size.x*.5, -visual->size.y*.5);
   ofTranslate(0, visual->size.y);
   ofScale(1,-1);
@@ -303,9 +305,11 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
   float perimeter = dist1+dist2+dist3;
   
   APVParticle* tempParticle = (APVParticle*)(*firstPoint);
-  alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 200;
+  alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 300;
   tempParticle = NULL;
   ofColor triangleColor = visual->triangleColor;
+  
+  alpha = ofMap(alpha, 0, 300, 0, 255);
   
   if(alpha > 150)
   {
@@ -329,8 +333,6 @@ void APVParticleSystem::drawTriangle(vector<GoofyParticle*>::iterator firstPoint
     if(alpha > 150)
       triangleColor = ofColor(255,alpha);
   }
-  
-  
   
   int maxDistancePoints = visual->size.y;
   
@@ -371,7 +373,7 @@ void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr, 
 void APVParticleSystem::drawConnectPoints(vector<GoofyParticle*>::iterator vItr, vector<GoofyParticle*>::iterator pPointerIn, int cont, int cont2)
 {
   APVParticle* tempParticle = (APVParticle*)(*vItr);
-  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * 150;
+  float alpha = tempParticle->audioCoefficent * visual->globalAlphaCoefficent * lineAlpha;
   tempParticle = NULL;
   float distance = (*vItr)->position.distance((*pPointerIn)->position);
   ofColor lineColor = ofColor(255,alpha);
