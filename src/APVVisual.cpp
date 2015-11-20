@@ -445,8 +445,8 @@ void APVVisual::draw()
   ofPopStyle();
 #endif
 #ifdef USE_SYPHON
-  individualTextureSyphonServer.publishTexture(&mainFbo.getTextureReference());
-  ofDrawBitmapString("Syphon active", ofPoint(10,60));
+//  individualTextureSyphonServer.publishTexture(&mainFbo.getTextureReference());
+//  ofDrawBitmapString("Syphon active", ofPoint(10,60));
 #endif
   ofPushStyle();
   ofEnableAlphaBlending();
