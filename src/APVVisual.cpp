@@ -122,6 +122,7 @@ void APVVisual::setupMainOscPointers()
   mapToFloatValue["/Movement/Repulsion_Force"] =  &particleSystem->repulsionForce;;
   mapToFloatValue["/Movement/Particle_Speed"] =  &particleSystem->sameLimitVelocity;
   mapToFloatValue["/Effect/Triangles/Triangle_Limit"] =  &triangleCoefficent;
+  mapToFloatValue["/Effect/Connect_Lines/Line_Alpha"] =  &particleSystem->lineAlpha;
   
   
   mapToFloatValue["/General/Volume/Audio_Invert_Coefficent"] =  &volumeInvertCoefficent;
