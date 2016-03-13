@@ -28,7 +28,7 @@ void APVParticleSystem::setup(APVVisual* _visual)
   useDifferentFBO = true;
   cout << "SETUP APV PARTICLE SYSTEM" << endl;
 //  if(useDifferentFBO)
-    initFBOs(visual->size);
+  initFBOs(visual->size);
   mesh.setMode(OF_PRIMITIVE_POINTS);
   lineAlpha = 255;
   glPointSize(3);
@@ -76,22 +76,23 @@ APVParticle* APVParticleSystem::addParticle(ofVec3f newPosition, float maxVeloci
 
 void APVParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
 {
-  if(followFlow)
+//  if(followFlow)
   {
-    if(particle->position.x < -100 )
-      particle->position.x = visual->size.x + 50;
-//      particle->active = false;
-    else if(particle->position.x > visual->size.x + 100 )
-      particle->position.x = -50;
-//      particle->active = false;
-    if(particle->position.y < -100 )
-//      particle->active = false;
-        particle->position.y = visual->size.y + 50;
-    else if(particle->position.y > visual->size.y + 100)
-//      particle->active = false;
-        particle->position.y = -50;
+//    if(particle->position.x < -100 )
+//      particle->position.x = visual->size.x + 50;
+////      particle->active = false;
+//    else if(particle->position.x > visual->size.x + 100 )
+//      particle->position.x = -50;
+////      particle->active = false;
+//    if(particle->position.y < -100 )
+////      particle->active = false;
+//        particle->position.y = visual->size.y + 50;
+//    else if(particle->position.y > visual->size.y + 100)
+////      particle->active = false;
+//        particle->position.y = -50;
   }
-  else if(!followFlow&&applyWind)
+//  else if(!followFlow&&applyWind)
+  if(followFlow||applyWind)
   {
     if(particle->position.x < -100 )
       particle->active = false;
@@ -218,6 +219,7 @@ void APVParticleSystem::updateAndDrawWithVisual()
     cont++;
   }
   drawMeshesIntoFBOs();
+  removeRepellers();
 }
 
 void APVParticleSystem::drawMeshesIntoFBOs()
@@ -360,13 +362,16 @@ void APVParticleSystem::connectPrevPoint(vector<GoofyParticle*>::iterator vItr, 
   tempParticle = NULL;
   vector<GoofyParticle*>::iterator prevParticle = vItr - 1;
   ofColor lineColor = ofColor(255,alpha);
-  if((*prevParticle)->active)
+  if((*prevParticle) != NULL)
   {
-    ofLine((*vItr)->position, (*prevParticle)->position);
-    connectPrevPointIndices.push_back(cont);
-    connectPrevPointIndices.push_back(cont-1);
-    connectPrevPointColors.push_back(lineColor);
-    connectPrevPointColors.push_back(lineColor);
+    if((*prevParticle)->active)
+      {
+        ofLine((*vItr)->position, (*prevParticle)->position);
+        connectPrevPointIndices.push_back(cont);
+        connectPrevPointIndices.push_back(cont-1);
+        connectPrevPointColors.push_back(lineColor);
+        connectPrevPointColors.push_back(lineColor);
+      }
   }
 }
 
